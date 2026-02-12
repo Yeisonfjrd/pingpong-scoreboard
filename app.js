@@ -1,4 +1,3 @@
-// --- CONFIGURACIÓN Y ESTADO INICIAL ---
 const STORAGE_KEY = "pingpong_cinema_data_v1";
 
 const defaultState = {
@@ -22,7 +21,6 @@ const rules = {
   matchOver: false,
 };
 
-// --- ELEMENTOS DEL DOM ---
 const els = {
   player1Input: document.getElementById("player1"),
   player2Input: document.getElementById("player2"),
@@ -58,12 +56,10 @@ const els = {
   sessionTime: document.getElementById("sessionTime"),
 };
 
-// --- INICIALIZACIÓN ---
 function init() {
   updateUI();
   setupEventListeners();
   startTimer();
-  console.log("Sistema Ping-Pong Cinema Iniciado");
 }
 
 function setupEventListeners() {
@@ -108,8 +104,6 @@ function setupEventListeners() {
   els.voiceBtn.addEventListener("click", toggleVoice);
 }
 
-// --- LÓGICA DE JUEGO Y PERSISTENCIA ---
-
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
@@ -124,9 +118,8 @@ function addPoints(playerNum, amount = 1) {
   player.score += amount;
   state.stats.totalPoints += amount;
   
-  // Lógica de rally
   const now = Date.now();
-  if (now - state.stats.lastPointTime < 5000) { // Si el punto fue rápido se asume continuación
+  if (now - state.stats.lastPointTime < 5000) {
     state.stats.currentRallyLength++;
     if (state.stats.currentRallyLength > state.stats.longestRally) {
       state.stats.longestRally = state.stats.currentRallyLength;
@@ -145,7 +138,6 @@ function removePoints(playerNum, amount = 1) {
     const player = playerNum === 1 ? state.player1 : state.player2;
     if (player.score > 0) {
         player.score = Math.max(0, player.score - amount);
-        // Ajustamos también estadísticas totales para ser justos
         state.stats.totalPoints = Math.max(0, state.stats.totalPoints - amount);
         saveState();
         updateUI();
@@ -168,7 +160,7 @@ function removeWin(playerNum) {
     if (player.wins > 0) {
         player.wins -= 1;
         state.stats.totalGames = Math.max(0, state.stats.totalGames - 1);
-        rules.matchOver = false; // Reabrir el juego si se quitó la victoria por error
+        rules.matchOver = false;
         saveState();
         updateUI();
         return true;
@@ -183,9 +175,6 @@ function resetScore(fullReset = false) {
   state.stats.currentRallyLength = 0;
   
   if (fullReset) {
-      // Opcional: ¿Quieres borrar victorias también? 
-      // Por ahora solo reseteamos puntos de la partida actual
-      // Si quisieras resetear TODO: state = JSON.parse(JSON.stringify(defaultState)); state.player1.name = ...
   }
   
   saveState();
@@ -194,7 +183,7 @@ function resetScore(fullReset = false) {
 
 function handlePoint(playerNum) {
     const name = addPoints(playerNum);
-    if (!name) return; // Si matchOver
+    if (!name) return;
     
     highlightPlayer(playerNum);
     checkGameWinCondition();
@@ -204,15 +193,12 @@ function checkGameWinCondition() {
     const p1 = state.player1.score;
     const p2 = state.player2.score;
     
-    // Sugerencias de IA (Game Point)
-    els.aiSuggestion.classList.add("hidden"); // Ocultar por defecto
+    els.aiSuggestion.classList.add("hidden");
     
     if (p1 >= 10 || p2 >= 10) {
         const diff = Math.abs(p1 - p2);
         
         if (p1 >= rules.pointsToWinGame && (p1 - p2) >= rules.winBy) {
-            // Ganó P1
-            // No auto-asignamos victoria para dar emoción, pero sugerimos
             showAISuggestion(`¡Juego para ${state.player1.name}! Di "${state.player1.name} ganó" para registrar.`);
         } else if (p2 >= rules.pointsToWinGame && (p2 - p1) >= rules.winBy) {
              showAISuggestion(`¡Juego para ${state.player2.name}! Di "${state.player2.name} ganó" para registrar.`);
@@ -229,7 +215,6 @@ function checkGameWinCondition() {
     }
 }
 
-// --- UI UPDATES ---
 function updateUI() {
   els.player1Input.value = state.player1.name;
   els.player2Input.value = state.player2.name;
@@ -275,8 +260,8 @@ function showAISuggestion(text) {
 
 function celebrate(winnerName) {
   els.celebration.classList.remove("hidden");
-  els.celebration.classList.add("flex"); // Tailwind flex
-  els.celebration.classList.add("animate-fadeOut"); // Custom animation
+  els.celebration.classList.add("flex");
+  els.celebration.classList.add("animate-fadeOut");
   
   els.celebrationText.textContent = "VICTORIA";
   els.celebrationText.classList.add("animate-celebrateZoom");
@@ -296,14 +281,12 @@ function startTimer() {
   }, 60000);
 }
 
-// --- RECONOCIMIENTO DE VOZ ---
 let recognition = null;
 let isListening = false;
 let synthesis = window.speechSynthesis;
 
 function speak(text) {
     if (!synthesis) return;
-    // Cancelar habla anterior para no acumular
     synthesis.cancel(); 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "es-ES";
@@ -328,7 +311,7 @@ function startVoice() {
 
     if (!recognition) {
         recognition = new SpeechRecognition();
-        recognition.lang = "es-ES"; // O es-AR, es-MX según prefieras
+        recognition.lang = "es-ES";
         recognition.continuous = true;
         recognition.interimResults = false;
 
@@ -342,7 +325,7 @@ function startVoice() {
         recognition.onend = () => {
             if (isListening) {
                 try {
-                    recognition.start(); // Reiniciar si se detuvo solo
+                    recognition.start();
                 } catch(e) {
                     console.log("Reinicio voz ignorado");
                 }
@@ -395,10 +378,27 @@ function processVoiceCommand(text) {
     const p1Name = state.player1.name.toLowerCase();
     const p2Name = state.player2.name.toLowerCase();
     
-    // Limpieza básica
     text = text.replace(/[.,]/g, "");
+    
+    const numberWords = {
+      un: 1,
+      uno: 1,
+      una: 1,
+      dos: 2,
+      tres: 3,
+      cuatro: 4,
+      cinco: 5,
+    };
+    let amount = 1;
+    const amountMatch = text.match(
+      /\b(un|uno|una|dos|tres|cuatro|cinco|1|2|3|4|5)\b/
+    );
+    if (amountMatch) {
+      const raw = amountMatch[1];
+      amount = numberWords[raw] || parseInt(raw, 10) || 1;
+    }
+    const amountLabel = `${amount} punto${amount !== 1 ? "s" : ""}`;
 
-    // COMANDOS DE REINICIO
     if (text.includes("reiniciar") || text.includes("reset") || text.includes("borrar todo")) {
         resetScore(true);
         showNotification("Marcador Reiniciado");
@@ -406,77 +406,74 @@ function processVoiceCommand(text) {
         return;
     }
 
-    // DETECTAR INTENCIÓN: ¿SUMAR O RESTAR?
     const isSubtract = text.includes("quita") || text.includes("resta") || text.includes("borra") || text.includes("menos") || text.includes("saca");
     
-    // DETECTAR TIPO: ¿PUNTO O VICTORIA?
     const isWin = text.includes("victoria") || text.includes("ganó") || text.includes("gano") || text.includes("ganador");
 
-    // LOGICA JUGADOR 1
     if (text.includes(p1Name) || text.includes("jugador 1") || text.includes("uno")) {
         if (isWin) {
             if (isSubtract) {
                 if(removeWin(1)) {
                     showNotification(`Victoria quitada a ${state.player1.name}`);
-                    speak("Victoria corregida");
+                    speak("Confirmo: quitar victoria jugador 1");
                 }
             } else {
                 awardWin(1);
                 showNotification(`Victoria para ${state.player1.name}`);
                 celebrate(state.player1.name);
-                speak(`Victoria para ${state.player1.name}`);
+                speak("Confirmo: victoria jugador 1");
             }
         } else {
-            // Puntos
             if (isSubtract) {
-                if(removePoints(1, 1)) {
-                    showNotification(`-1 punto a ${state.player1.name}`);
-                    speak("Punto quitado");
+                if(removePoints(1, amount)) {
+                    const msg = `${amountLabel} menos jugador 1`;
+                    showNotification(msg);
+                    speak(`Confirmo: ${msg}`);
                 }
             } else {
-                addPoints(1, 1);
+                addPoints(1, amount);
                 highlightPlayer(1);
-                showNotification(`Punto para ${state.player1.name}`);
+                const msg = `${amountLabel} jugador 1`;
+                showNotification(msg);
+                speak(`Confirmo: ${msg}`);
                 checkGameWinCondition();
             }
         }
         return;
     }
 
-    // LOGICA JUGADOR 2
     if (text.includes(p2Name) || text.includes("jugador 2") || text.includes("dos") || text.includes("rival")) {
         if (isWin) {
             if (isSubtract) {
                 if(removeWin(2)) {
                     showNotification(`Victoria quitada a ${state.player2.name}`);
-                    speak("Victoria corregida");
+                    speak("Confirmo: quitar victoria jugador 2");
                 }
             } else {
                 awardWin(2);
                 showNotification(`Victoria para ${state.player2.name}`);
                 celebrate(state.player2.name);
-                speak(`Victoria para ${state.player2.name}`);
+                speak("Confirmo: victoria jugador 2");
             }
         } else {
-            // Puntos
             if (isSubtract) {
-                if(removePoints(2, 1)) {
-                    showNotification(`-1 punto a ${state.player2.name}`);
-                    speak("Punto quitado");
+                if(removePoints(2, amount)) {
+                    const msg = `${amountLabel} menos jugador 2`;
+                    showNotification(msg);
+                    speak(`Confirmo: ${msg}`);
                 }
             } else {
-                addPoints(2, 1);
+                addPoints(2, amount);
                 highlightPlayer(2);
-                showNotification(`Punto para ${state.player2.name}`);
+                const msg = `${amountLabel} jugador 2`;
+                showNotification(msg);
+                speak(`Confirmo: ${msg}`);
                 checkGameWinCondition();
             }
         }
         return;
     }
     
-    // COMANDOS GENÉRICOS ("Punto para mí")
-    // Se podrían agregar aquí si se desea lógica de "yo soy player 1"
 }
 
-// Arrancar
 init();
