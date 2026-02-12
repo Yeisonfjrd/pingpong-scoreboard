@@ -1,0 +1,17 @@
+{
+  "name": "pingpong-scoreboard",
+  "version": "1.0.0",
+  "description": "Ping-Pong scoreboard with voice recognition",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx live-server --port=3000 --open=/index.html",
+    "start": "npx live-server --port=3000 --open=/index.html"
+  },
+  "keywords": [
+    "ping-pong",
+    "scoreboard",
+    "voice-recognition"
+  ],
+  "author": "",
+  "license": "MIT"
+}

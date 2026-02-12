@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Marcador Ping-Pong | Cinema Edition</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              cinema: ['"DM Mono"', "monospace"],
+              display: ['"Bebas Neue"', "system-ui"],
+            },
+            colors: {
+              cinema: {
+                white: "#FAFAFA",
+                "off-white": "#E8E8E8",
+                gray: "#888888",
+                "dark-gray": "#333333",
+                black: "#0A0A0A",
+              },
+            },
+            boxShadow: {
+              cinema: "0 8px 32px rgba(0,0,0,0.8)",
+            },
+            keyframes: {
+              borderPulse: {
+                "0%": { opacity: "1", transform: "scale(1)" },
+                "100%": { opacity: "0", transform: "scale(1.05)" },
+              },
+              voicePulse: {
+                "0%, 100%": { transform: "scale(1)" },
+                "50%": { transform: "scale(1.05)" },
+              },
+              ripple: {
+                "0%": { transform: "scale(1)", opacity: "1" },
+                "100%": { transform: "scale(1.3)", opacity: "0" },
+              },
+              blink: {
+                "0%, 100%": { opacity: "1" },
+                "50%": { opacity: "0.4" },
+              },
+              slideIn: {
+                from: { opacity: "0", transform: "translateX(-10px)" },
+                to: { opacity: "1", transform: "translateX(0)" },
+              },
+              celebrateZoom: {
+                "0%": { transform: "scale(0) rotate(-10deg)", opacity: "0" },
+                "50%": { transform: "scale(1.2) rotate(5deg)", opacity: "1" },
+                "100%": { transform: "scale(1) rotate(0deg)", opacity: "0" },
+              },
+              fadeOut: {
+                "0%": { opacity: "1" },
+                "100%": { opacity: "0" },
+              },
+            },
+            animation: {
+              borderPulse: "borderPulse 0.6s ease-out",
+              voicePulse: "voicePulse 2s infinite",
+              ripple: "ripple 2s infinite",
+              blink: "blink 1.5s infinite",
+              slideIn: "slideIn 0.4s ease-out",
+              celebrateZoom: "celebrateZoom 1s ease-out",
+              fadeOut: "fadeOut 1s ease-out forwards",
+            },
+          },
+        },
+      };
+    </script>
+    
+    <style>
+      .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+    </style>
+  </head>
+  
+  <body class="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#1A1A1A] to-[#0A0A0A] text-cinema-white px-4 py-6 overflow-x-hidden no-tap-highlight font-cinema">
+    
+    <div class="max-w-md w-full mx-auto">
+      <header class="pb-6 mb-10 text-center border-b select-none border-white/10">
+        <h1 class="font-display text-4xl sm:text-5xl tracking-[0.25em] text-cinema-white mb-1 uppercase">
+          Ping-Pong
+        </h1>
+        <p class="text-[0.7rem] text-cinema-white uppercase tracking-[0.2em] font-light">
+          Marcador de Ping-Pong
+        </p>
+      </header>
+
+      <section class="mb-8 space-y-4">
+        <div>
+          <label for="player1" class="block text-[0.7rem] text-cinema-white uppercase tracking-[0.18em] mb-2">Player 1</label>
+          <input id="player1" type="text" value="Yeison" placeholder="Nombre" class="w-full px-4 py-3 text-sm transition bg-transparent border rounded-sm border-white/15 text-cinema-white placeholder:text-white/30 focus:outline-none focus:border-white focus:bg-white/5 uppercase tracking-widest" />
+        </div>
+        <div>
+          <label for="player2" class="block text-[0.7rem] text-cinema-white uppercase tracking-[0.18em] mb-2">Player 2</label>
+          <input id="player2" type="text" value="Rival" placeholder="Nombre" class="w-full px-4 py-3 text-sm transition bg-transparent border rounded-sm border-white/15 text-cinema-white placeholder:text-white/30 focus:outline-none focus:border-white focus:bg-white/5 uppercase tracking-widest" />
+        </div>
+      </section>
+
+      <section class="relative mb-8 overflow-hidden border border-white/15 bg-gradient-to-br from-white/5 via-transparent to-transparent">
+        <div class="grid grid-cols-[1fr_auto_1fr]"> 
+          
+          <div id="panel1" class="relative px-5 py-7 text-center transition-all duration-300">
+            <div id="flash1" class="absolute inset-0 border-2 border-white/90 hidden pointer-events-none"></div>
+            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.2em] mb-4">Player 1</p>
+            <p id="name1" class="font-display text-xl tracking-[0.16em] text-cinema-white mb-4 min-h-[1.75rem]">Yeison</p>
+            <p id="score1" class="font-display text-[4.5rem] sm:text-[5.5rem] leading-none text-cinema-white mb-4 relative">0</p>
+            <div class="mt-4 text-[0.7rem] text-cinema-white uppercase tracking-[0.16em]">
+              Victorias <span id="wins1" class="ml-1 font-medium text-cinema-white">0</span>
+            </div>
+          </div>
+
+          <div class="w-px bg-white/15"></div>
+
+          <div id="panel2" class="relative px-5 py-7 text-center transition-all duration-300">
+            <div id="flash2" class="absolute inset-0 border-2 border-white/90 hidden pointer-events-none"></div>
+            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.2em] mb-4">Player 2</p>
+            <p id="name2" class="font-display text-xl tracking-[0.16em] text-cinema-white mb-4 min-h-[1.75rem]">Rival</p>
+            <p id="score2" class="font-display text-[4.5rem] sm:text-[5.5rem] leading-none text-cinema-white mb-4 relative">0</p>
+            <div class="mt-4 text-[0.7rem] text-cinema-white uppercase tracking-[0.16em]">
+              Victorias <span id="wins2" class="ml-1 font-medium text-cinema-white">0</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="statsSection" class="hidden p-5 mb-8 border border-white/10">
+        <h3 class="font-display text-lg tracking-[0.18em] mb-4 text-cinema-white uppercase">Estadísticas</h3>
+        <div class="grid grid-cols-2 gap-4 mt-2">
+          <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
+            <p id="totalPoints" class="mb-1 text-3xl font-display text-cinema-white">0</p>
+            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Puntos Totales</p>
+          </div>
+          <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
+            <p id="totalGames" class="mb-1 text-3xl font-display text-cinema-white">0</p>
+            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Partidas</p>
+          </div>
+          <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
+            <p id="longestRally" class="mb-1 text-3xl font-display text-cinema-white">0</p>
+            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Rally Max</p>
+          </div>
+          <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
+            <p id="sessionTime" class="mb-1 text-3xl font-display text-cinema-white">0m</p>
+            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Tiempo</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="relative px-6 py-8 mb-8 text-center border border-white/15">
+        <button id="voiceBtn" class="relative flex items-center justify-center w-24 h-24 mx-auto mb-5 text-3xl transition bg-transparent border-2 rounded-full border-white/30 text-cinema-white hover:border-white hover:bg-white/10 group">
+            <span class="absolute inset-[-8px] rounded-full border border-white/30 hidden group-[.active]:block group-[.active]:animate-ripple"></span>
+            🎤
+        </button>
+        <p id="voiceStatus" class="text-[0.7rem] text-cinema-white uppercase tracking-[0.16em] mb-4">
+          Presiona para activar
+        </p>
+        <div id="lastCommand" class="bg-white/5 border border-white/10 px-4 py-3 text-[0.75rem] text-cinema-white italic flex items-center justify-center min-h-[3.25rem]">
+          Esperando comando...
+        </div>
+        <div id="aiSuggestion" class="mt-4 border border-white/10 border-l-4 border-l-white bg-white/5 px-4 py-3 text-[0.7rem] text-cinema-off-white leading-relaxed text-left hidden animate-slideIn"></div>
+      </section>
+
+      <section class="grid grid-cols-2 sm:grid-cols-2 gap-3 mb-8">
+        <button id="p1Plus" class="border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">+1 P1</button>
+        <button id="p2Plus" class="border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">+1 P2</button>
+        <button id="p1Minus" class="border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-3 bg-transparent text-white/70 hover:bg-white/10 hover:border-white transition">-1 P1</button>
+        <button id="p2Minus" class="border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-3 bg-transparent text-white/70 hover:bg-white/10 hover:border-white transition">-1 P2</button>
+        
+        <button id="p1Win" class="col-span-1 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Gana P1</button>
+        <button id="p2Win" class="col-span-1 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Gana P2</button>
+        
+        <button id="resetScore" class="col-span-2 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-5 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Reiniciar Puntaje</button>
+        <button id="toggleStats" class="col-span-2 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-5 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Mostrar Stats</button>
+      </section>
+    </div>
+
+    <div id="notification" class="fixed top-4 left-4 right-4 sm:top-6 sm:right-6 sm:left-auto bg-cinema-black border border-white px-6 py-4 text-[0.75rem] uppercase tracking-[0.12em] shadow-cinema z-50 text-cinema-white transform transition-transform duration-300 translate-x-[150%]"></div>
+
+    <div id="celebration" class="fixed inset-0 z-40 items-center justify-center hidden bg-white/10 pointer-events-none">
+      <div id="celebrationText" class="font-display text-5xl md:text-6xl tracking-[0.24em] text-cinema-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.8)]">
+        VICTORIA
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
