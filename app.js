@@ -74,16 +74,31 @@ function setupEventListeners() {
     updateUI();
   });
 
-  els.p1Plus.addEventListener("click", () => handlePoint(1));
-  els.p2Plus.addEventListener("click", () => handlePoint(2));
-  els.p1Minus.addEventListener("click", () => removePoints(1, 1));
-  els.p2Minus.addEventListener("click", () => removePoints(2, 1));
+  els.p1Plus.addEventListener("click", () => {
+    handlePoint(1);
+    speak(`1 punto jugador 1`);
+  });
+  els.p2Plus.addEventListener("click", () => {
+    handlePoint(2);
+    speak(`1 punto jugador 2`);
+  });
+  els.p1Minus.addEventListener("click", () => {
+    if(removePoints(1, 1)) {
+      speak(`1 punto menos jugador 1`);
+    }
+  });
+  els.p2Minus.addEventListener("click", () => {
+    if(removePoints(2, 1)) {
+      speak(`1 punto menos jugador 2`);
+    }
+  });
   
   els.p1Win.addEventListener("click", () => {
     awardWin(1);
     const name = state.player1.name;
     showNotification(`Victoria Manual: ${name}`);
     celebrate(name);
+    speak(`Victoria jugador 1`);
   });
   
   els.p2Win.addEventListener("click", () => {
@@ -91,9 +106,13 @@ function setupEventListeners() {
     const name = state.player2.name;
     showNotification(`Victoria Manual: ${name}`);
     celebrate(name);
+    speak(`Victoria jugador 2`);
   });
 
-  els.resetScore.addEventListener("click", () => resetScore(true));
+  els.resetScore.addEventListener("click", () => {
+    resetScore(true);
+    speak("Marcador reiniciado");
+  });
   
   els.toggleStats.addEventListener("click", () => {
     els.statsSection.classList.toggle("hidden");
@@ -153,6 +172,7 @@ function awardWin(playerNum) {
   rules.matchOver = true;
   saveState();
   updateUI();
+  speak(`Victoria jugador ${playerNum}`);
 }
 
 function removeWin(playerNum) {
@@ -163,6 +183,7 @@ function removeWin(playerNum) {
         rules.matchOver = false;
         saveState();
         updateUI();
+        speak(`Victoria quitada jugador ${playerNum}`);
         return true;
     }
     return false;
@@ -179,6 +200,7 @@ function resetScore(fullReset = false) {
   
   saveState();
   updateUI();
+  speak("Marcador reiniciado");
 }
 
 function handlePoint(playerNum) {
@@ -199,18 +221,25 @@ function checkGameWinCondition() {
         const diff = Math.abs(p1 - p2);
         
         if (p1 >= rules.pointsToWinGame && (p1 - p2) >= rules.winBy) {
-            showAISuggestion(`¡Juego para ${state.player1.name}! Di "${state.player1.name} ganó" para registrar.`);
+            const msg = `¡Juego para ${state.player1.name}! Di "${state.player1.name} ganó" para registrar.`;
+            showAISuggestion(msg);
+            speak(`Confirmar victoria jugador 1`);
         } else if (p2 >= rules.pointsToWinGame && (p2 - p1) >= rules.winBy) {
-             showAISuggestion(`¡Juego para ${state.player2.name}! Di "${state.player2.name} ganó" para registrar.`);
+            const msg = `¡Juego para ${state.player2.name}! Di "${state.player2.name} ganó" para registrar.`;
+            showAISuggestion(msg);
+            speak(`Confirmar victoria jugador 2`);
         } else if (p1 >= 10 && p1 > p2) {
             showAISuggestion(`Game Point para ${state.player1.name}`);
             els.aiSuggestion.classList.remove("hidden");
+            speak(`Game point jugador 1`);
         } else if (p2 >= 10 && p2 > p1) {
             showAISuggestion(`Game Point para ${state.player2.name}`);
             els.aiSuggestion.classList.remove("hidden");
+            speak(`Game point jugador 2`);
         } else if (p1 === p2 && p1 >= 10) {
             showAISuggestion("Deuce (Empate)");
             els.aiSuggestion.classList.remove("hidden");
+            speak("Deuce, empate");
         }
     }
 }
@@ -286,12 +315,14 @@ let isListening = false;
 let synthesis = window.speechSynthesis;
 
 function speak(text) {
-    if (!synthesis) return;
-    synthesis.cancel(); 
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "es-ES";
-    utterance.rate = 1.1;
-    synthesis.speak(utterance);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    window.speechSynthesis.speak(utterance);
 }
 
 function toggleVoice() {
@@ -379,25 +410,6 @@ function processVoiceCommand(text) {
     const p2Name = state.player2.name.toLowerCase();
     
     text = text.replace(/[.,]/g, "");
-    
-    const numberWords = {
-      un: 1,
-      uno: 1,
-      una: 1,
-      dos: 2,
-      tres: 3,
-      cuatro: 4,
-      cinco: 5,
-    };
-    let amount = 1;
-    const amountMatch = text.match(
-      /\b(un|uno|una|dos|tres|cuatro|cinco|1|2|3|4|5)\b/
-    );
-    if (amountMatch) {
-      const raw = amountMatch[1];
-      amount = numberWords[raw] || parseInt(raw, 10) || 1;
-    }
-    const amountLabel = `${amount} punto${amount !== 1 ? "s" : ""}`;
 
     if (text.includes("reiniciar") || text.includes("reset") || text.includes("borrar todo")) {
         resetScore(true);
@@ -410,7 +422,29 @@ function processVoiceCommand(text) {
     
     const isWin = text.includes("victoria") || text.includes("ganó") || text.includes("gano") || text.includes("ganador");
 
-    if (text.includes(p1Name) || text.includes("jugador 1") || text.includes("uno")) {
+    const numberWords = {
+      un: 1,
+      uno: 1,
+      una: 1,
+      dos: 2,
+      tres: 3,
+      cuatro: 4,
+      cinco: 5,
+    };
+    let amount = 1;
+    const explicitAmountMatch = text.match(
+      /\b(un|uno|una|dos|tres|cuatro|cinco|1|2|3|4|5)\s+(punto|puntos?)\b/i
+    );
+    if (explicitAmountMatch) {
+      const raw = explicitAmountMatch[1];
+      amount = numberWords[raw] || parseInt(raw, 10) || 1;
+    }
+    const amountLabel = `${amount} punto${amount !== 1 ? "s" : ""}`;
+
+    const isPlayer1 = text.includes(p1Name) || text.includes("jugador 1") || (text.includes("uno") && !text.includes("jugador 2") && !text.includes("jugador dos"));
+    const isPlayer2 = text.includes(p2Name) || text.includes("jugador 2") || text.includes("jugador dos") || (text.includes("dos") && !explicitAmountMatch);
+
+    if (isPlayer1) {
         if (isWin) {
             if (isSubtract) {
                 if(removeWin(1)) {
@@ -442,7 +476,7 @@ function processVoiceCommand(text) {
         return;
     }
 
-    if (text.includes(p2Name) || text.includes("jugador 2") || text.includes("dos") || text.includes("rival")) {
+    if (isPlayer2 || text.includes("rival")) {
         if (isWin) {
             if (isSubtract) {
                 if(removeWin(2)) {
