@@ -104,7 +104,7 @@ function setupEventListeners() {
   els.p2Win.addEventListener("click", () => {
     awardWin(2);
     const name = state.player2.name;
-    showNotification(`Victoria Manual: ${name}`);
+    showNotification(`Victoria manual para ${name}`);
     celebrate(name);
     speak(`Victoria para el jugador 2`);
   });
