@@ -76,29 +76,29 @@ function setupEventListeners() {
 
   els.p1Plus.addEventListener("click", () => {
     handlePoint(1);
-    speak(`1 punto jugador 1`);
+    speak(`1 punto para el jugador 1`);
   });
   els.p2Plus.addEventListener("click", () => {
     handlePoint(2);
-    speak(`1 punto jugador 2`);
+    speak(`1 punto para el jugador 2`);
   });
   els.p1Minus.addEventListener("click", () => {
     if(removePoints(1, 1)) {
-      speak(`1 punto menos jugador 1`);
+      speak(`1 punto menos para el jugador 1`);
     }
   });
   els.p2Minus.addEventListener("click", () => {
     if(removePoints(2, 1)) {
-      speak(`1 punto menos jugador 2`);
+      speak(`1 punto menos para el jugador 2`);
     }
   });
   
   els.p1Win.addEventListener("click", () => {
     awardWin(1);
     const name = state.player1.name;
-    showNotification(`Victoria Manual: ${name}`);
+    showNotification(`Victoria manual para ${name}`);
     celebrate(name);
-    speak(`Victoria jugador 1`);
+    speak(`Victoria para el jugador 1`);
   });
   
   els.p2Win.addEventListener("click", () => {
@@ -106,7 +106,7 @@ function setupEventListeners() {
     const name = state.player2.name;
     showNotification(`Victoria Manual: ${name}`);
     celebrate(name);
-    speak(`Victoria jugador 2`);
+    speak(`Victoria para el jugador 2`);
   });
 
   els.resetScore.addEventListener("click", () => {
@@ -172,7 +172,7 @@ function awardWin(playerNum) {
   rules.matchOver = true;
   saveState();
   updateUI();
-  speak(`Victoria jugador ${playerNum}`);
+  speak(`Victoria para el jugador ${playerNum}`);
 }
 
 function removeWin(playerNum) {
@@ -183,7 +183,7 @@ function removeWin(playerNum) {
         rules.matchOver = false;
         saveState();
         updateUI();
-        speak(`Victoria quitada jugador ${playerNum}`);
+        speak(`Victoria quitada para el jugador ${playerNum}`);
         return true;
     }
     return false;
@@ -223,11 +223,11 @@ function checkGameWinCondition() {
         if (p1 >= rules.pointsToWinGame && (p1 - p2) >= rules.winBy) {
             const msg = `¡Juego para ${state.player1.name}! Di "${state.player1.name} ganó" para registrar.`;
             showAISuggestion(msg);
-            speak(`Confirmar victoria jugador 1`);
+            speak(`Victoria para el jugador 1`);
         } else if (p2 >= rules.pointsToWinGame && (p2 - p1) >= rules.winBy) {
             const msg = `¡Juego para ${state.player2.name}! Di "${state.player2.name} ganó" para registrar.`;
             showAISuggestion(msg);
-            speak(`Confirmar victoria jugador 2`);
+            speak(`Victoria para el jugador 2`);
         } else if (p1 >= 10 && p1 > p2) {
             showAISuggestion(`Game Point para ${state.player1.name}`);
             els.aiSuggestion.classList.remove("hidden");
@@ -336,7 +336,7 @@ function toggleVoice() {
 function startVoice() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-        showNotification("Tu navegador no soporta comandos de voz");
+        showNotification("Tu navegador no soporta reconocimiento de voz");
         return;
     }
 
@@ -349,7 +349,7 @@ function startVoice() {
         recognition.onstart = () => {
             isListening = true;
             els.voiceBtn.classList.add("active", "bg-white/10", "border-white");
-            els.voiceStatus.textContent = "Escuchando...";
+            els.voiceStatus.textContent = "Escuchando... Presiona para detener";
             els.voiceStatus.classList.add("animate-blink");
         };
 
@@ -358,22 +358,22 @@ function startVoice() {
                 try {
                     recognition.start();
                 } catch(e) {
-                    console.log("Reinicio voz ignorado");
+                    console.log("Reinicio de voz ignorado");
                 }
             } else {
                 els.voiceBtn.classList.remove("active", "bg-white/10", "border-white");
-                els.voiceStatus.textContent = "Presiona para activar";
+                els.voiceStatus.textContent = "Presiona para activar el reconocimiento de voz";
                 els.voiceStatus.classList.remove("animate-blink");
             }
         };
 
         recognition.onerror = (event) => {
-            console.error("Error Voz:", event.error);
+            console.error("Error de voz:", event.error);
             if (event.error === 'network') {
-                showNotification("Error de red. Revisa conexión.");
+                showNotification("Error de red. Verifica tu conexión.");
                 stopVoice();
             } else if (event.error === 'not-allowed') {
-                showNotification("Permiso de micro denegado.");
+                showNotification("Permiso de microfono denegado.");
                 stopVoice();
             }
         };
@@ -413,7 +413,7 @@ function processVoiceCommand(text) {
 
     if (text.includes("reiniciar") || text.includes("reset") || text.includes("borrar todo")) {
         resetScore(true);
-        showNotification("Marcador Reiniciado");
+        showNotification("Marcador reiniciado");
         speak("Marcador reiniciado");
         return;
     }
@@ -449,27 +449,27 @@ function processVoiceCommand(text) {
             if (isSubtract) {
                 if(removeWin(1)) {
                     showNotification(`Victoria quitada a ${state.player1.name}`);
-                    speak("Confirmo: quitar victoria jugador 1");
+                    speak("Quitando victoria a jugador 1");
                 }
             } else {
                 awardWin(1);
                 showNotification(`Victoria para ${state.player1.name}`);
                 celebrate(state.player1.name);
-                speak("Confirmo: victoria jugador 1");
+                speak("Asignando victoria a jugador 1");
             }
         } else {
             if (isSubtract) {
                 if(removePoints(1, amount)) {
                     const msg = `${amountLabel} menos jugador 1`;
                     showNotification(msg);
-                    speak(`Confirmo: ${msg}`);
+                    speak(`${msg}`);
                 }
             } else {
                 addPoints(1, amount);
                 highlightPlayer(1);
                 const msg = `${amountLabel} jugador 1`;
                 showNotification(msg);
-                speak(`Confirmo: ${msg}`);
+                speak(`${msg}`);
                 checkGameWinCondition();
             }
         }
@@ -481,27 +481,27 @@ function processVoiceCommand(text) {
             if (isSubtract) {
                 if(removeWin(2)) {
                     showNotification(`Victoria quitada a ${state.player2.name}`);
-                    speak("Confirmo: quitar victoria jugador 2");
+                    speak("Quitando victoria a jugador 2");
                 }
             } else {
                 awardWin(2);
                 showNotification(`Victoria para ${state.player2.name}`);
                 celebrate(state.player2.name);
-                speak("Confirmo: victoria jugador 2");
+                speak("Asignando victoria a jugador 2");
             }
         } else {
             if (isSubtract) {
                 if(removePoints(2, amount)) {
                     const msg = `${amountLabel} menos jugador 2`;
                     showNotification(msg);
-                    speak(`Confirmo: ${msg}`);
+                    speak(`${msg}`);
                 }
             } else {
                 addPoints(2, amount);
                 highlightPlayer(2);
                 const msg = `${amountLabel} jugador 2`;
                 showNotification(msg);
-                speak(`Confirmo: ${msg}`);
+                speak(`${msg}`);
                 checkGameWinCondition();
             }
         }
