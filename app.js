@@ -76,42 +76,40 @@ function setupEventListeners() {
 
   els.p1Plus.addEventListener("click", () => {
     handlePoint(1);
-    speak(`1 punto para el jugador 1`);
+    speak(`Punto uno`);
   });
   els.p2Plus.addEventListener("click", () => {
     handlePoint(2);
-    speak(`1 punto para el jugador 2`);
+    speak(`Punto dos`);
   });
   els.p1Minus.addEventListener("click", () => {
     if(removePoints(1, 1)) {
-      speak(`1 punto menos para el jugador 1`);
+      speak(`Menos uno`);
     }
   });
   els.p2Minus.addEventListener("click", () => {
     if(removePoints(2, 1)) {
-      speak(`1 punto menos para el jugador 2`);
+      speak(`Menos dos`);
     }
   });
   
   els.p1Win.addEventListener("click", () => {
     awardWin(1);
     const name = state.player1.name;
-    showNotification(`Victoria manual para ${name}`);
+    showNotification(`Victoria para ${name}`);
     celebrate(name);
-    speak(`Victoria para el jugador 1`);
   });
   
   els.p2Win.addEventListener("click", () => {
     awardWin(2);
     const name = state.player2.name;
-    showNotification(`Victoria manual para ${name}`);
+    showNotification(`Victoria para ${name}`);
     celebrate(name);
-    speak(`Victoria para el jugador 2`);
   });
 
   els.resetScore.addEventListener("click", () => {
     resetScore(true);
-    speak("Marcador reiniciado");
+    speak("Reiniciado");
   });
   
   els.toggleStats.addEventListener("click", () => {
@@ -170,9 +168,11 @@ function awardWin(playerNum) {
   player.wins += 1;
   state.stats.totalGames += 1;
   rules.matchOver = true;
+  state.player1.score = 0;
+  state.player2.score = 0;
   saveState();
   updateUI();
-  speak(`Victoria para el jugador ${playerNum}`);
+  speak(`Victoria ${playerNum}`);
 }
 
 function removeWin(playerNum) {
@@ -183,7 +183,7 @@ function removeWin(playerNum) {
         rules.matchOver = false;
         saveState();
         updateUI();
-        speak(`Victoria quitada para el jugador ${playerNum}`);
+        speak(`Quitada ${playerNum}`);
         return true;
     }
     return false;
@@ -194,13 +194,8 @@ function resetScore(fullReset = false) {
   state.player2.score = 0;
   rules.matchOver = false;
   state.stats.currentRallyLength = 0;
-  
-  if (fullReset) {
-  }
-  
   saveState();
   updateUI();
-  speak("Marcador reiniciado");
 }
 
 function handlePoint(playerNum) {
@@ -215,32 +210,12 @@ function checkGameWinCondition() {
     const p1 = state.player1.score;
     const p2 = state.player2.score;
     
-    els.aiSuggestion.classList.add("hidden");
-    
-    if (p1 >= 10 || p2 >= 10) {
-        const diff = Math.abs(p1 - p2);
-        
-        if (p1 >= rules.pointsToWinGame && (p1 - p2) >= rules.winBy) {
-            const msg = `¡Juego para ${state.player1.name}! Di "${state.player1.name} ganó" para registrar.`;
-            showAISuggestion(msg);
-            speak(`Victoria para el jugador 1`);
-        } else if (p2 >= rules.pointsToWinGame && (p2 - p1) >= rules.winBy) {
-            const msg = `¡Juego para ${state.player2.name}! Di "${state.player2.name} ganó" para registrar.`;
-            showAISuggestion(msg);
-            speak(`Victoria para el jugador 2`);
-        } else if (p1 >= 10 && p1 > p2) {
-            showAISuggestion(`Game Point para ${state.player1.name}`);
-            els.aiSuggestion.classList.remove("hidden");
-            speak(`Game point jugador 1`);
-        } else if (p2 >= 10 && p2 > p1) {
-            showAISuggestion(`Game Point para ${state.player2.name}`);
-            els.aiSuggestion.classList.remove("hidden");
-            speak(`Game point jugador 2`);
-        } else if (p1 === p2 && p1 >= 10) {
-            showAISuggestion("Deuce (Empate)");
-            els.aiSuggestion.classList.remove("hidden");
-            speak("Deuce, empate");
-        }
+    if (p1 >= rules.pointsToWinGame && (p1 - p2) >= rules.winBy) {
+        awardWin(1);
+        celebrate(state.player1.name);
+    } else if (p2 >= rules.pointsToWinGame && (p2 - p1) >= rules.winBy) {
+        awardWin(2);
+        celebrate(state.player2.name);
     }
 }
 
@@ -314,15 +289,36 @@ let recognition = null;
 let isListening = false;
 let synthesis = window.speechSynthesis;
 
+let speakQueue = [];
+let isSpeaking = false;
+
 function speak(text) {
     if (!("speechSynthesis" in window)) return;
+    
     window.speechSynthesis.cancel();
+    isSpeaking = false;
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "es-ES";
-    utterance.rate = 1.0;
+    utterance.rate = 1.2;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
-    window.speechSynthesis.speak(utterance);
+    
+    utterance.onend = () => {
+        isSpeaking = false;
+        if (speakQueue.length > 0) {
+            const next = speakQueue.shift();
+            window.speechSynthesis.speak(next);
+            isSpeaking = true;
+        }
+    };
+    
+    if (isSpeaking) {
+        speakQueue.push(utterance);
+    } else {
+        window.speechSynthesis.speak(utterance);
+        isSpeaking = true;
+    }
 }
 
 function toggleVoice() {
@@ -344,49 +340,62 @@ function startVoice() {
         recognition = new SpeechRecognition();
         recognition.lang = "es-ES";
         recognition.continuous = true;
-        recognition.interimResults = false;
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 3;
 
         recognition.onstart = () => {
             isListening = true;
             els.voiceBtn.classList.add("active", "bg-white/10", "border-white");
-            els.voiceStatus.textContent = "Escuchando... Presiona para detener";
+            els.voiceStatus.textContent = "Escuchando...";
             els.voiceStatus.classList.add("animate-blink");
         };
 
         recognition.onend = () => {
             if (isListening) {
-                try {
-                    recognition.start();
-                } catch(e) {
-                    console.log("Reinicio de voz ignorado");
-                }
+                setTimeout(() => {
+                    try {
+                        recognition.start();
+                    } catch(e) {
+                        console.log("Reinicio ignorado");
+                    }
+                }, 100);
             } else {
                 els.voiceBtn.classList.remove("active", "bg-white/10", "border-white");
-                els.voiceStatus.textContent = "Presiona para activar el reconocimiento de voz";
+                els.voiceStatus.textContent = "Presiona para activar";
                 els.voiceStatus.classList.remove("animate-blink");
             }
         };
 
         recognition.onerror = (event) => {
-            console.error("Error de voz:", event.error);
             if (event.error === 'network') {
-                showNotification("Error de red. Verifica tu conexión.");
+                showNotification("Error de red");
                 stopVoice();
             } else if (event.error === 'not-allowed') {
-                showNotification("Permiso de microfono denegado.");
+                showNotification("Permiso denegado");
                 stopVoice();
             }
         };
 
         recognition.onresult = (event) => {
-            const last = event.results.length - 1;
-            const transcript = event.results[last][0].transcript.toLowerCase().trim();
-            const confidence = event.results[last][0].confidence;
+            let bestTranscript = "";
+            let bestConfidence = 0;
             
-            console.log("Voz:", transcript, confidence);
-            els.lastCommand.textContent = `"${transcript}"`;
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const result = event.results[i];
+                if (result.isFinal) {
+                    for (let j = 0; j < result.length; j++) {
+                        if (result[j].confidence > bestConfidence) {
+                            bestConfidence = result[j].confidence;
+                            bestTranscript = result[j].transcript.toLowerCase().trim();
+                        }
+                    }
+                }
+            }
             
-            processVoiceCommand(transcript);
+            if (bestTranscript && bestConfidence > 0.3) {
+                els.lastCommand.textContent = `"${bestTranscript}"`;
+                processVoiceCommand(bestTranscript);
+            }
         };
     }
 
@@ -405,109 +414,111 @@ function stopVoice() {
     els.voiceStatus.classList.remove("animate-blink");
 }
 
+let lastCommandTime = 0;
+const COMMAND_DEBOUNCE = 500;
+
 function processVoiceCommand(text) {
+    const now = Date.now();
+    if (now - lastCommandTime < COMMAND_DEBOUNCE) return;
+    lastCommandTime = now;
+
     const p1Name = state.player1.name.toLowerCase();
     const p2Name = state.player2.name.toLowerCase();
     
-    text = text.replace(/[.,]/g, "");
+    text = text.replace(/[.,]/g, "").toLowerCase().trim();
 
-    if (text.includes("reiniciar") || text.includes("reset") || text.includes("borrar todo")) {
+    const words = text.split(/\s+/);
+
+    const resetWords = ["reiniciar", "reinicia", "reset", "resetea", "resetear", "borrar", "limpiar", "limpia", "nuevo"];
+    if (words.some(w => resetWords.includes(w))) {
         resetScore(true);
-        showNotification("Marcador reiniciado");
-        speak("Marcador reiniciado");
+        speak("Reiniciado");
         return;
     }
 
-    const isSubtract = text.includes("quita") || text.includes("resta") || text.includes("borra") || text.includes("menos") || text.includes("saca");
-    
-    const isWin = text.includes("victoria") || text.includes("ganó") || text.includes("gano") || text.includes("ganador");
-
-    const numberWords = {
-      un: 1,
-      uno: 1,
-      una: 1,
-      dos: 2,
-      tres: 3,
-      cuatro: 4,
-      cinco: 5,
-    };
-    let amount = 1;
-    const explicitAmountMatch = text.match(
-      /\b(un|uno|una|dos|tres|cuatro|cinco|1|2|3|4|5)\s+(punto|puntos?)\b/i
+    const isSubtract = words.some(w =>
+        ["quita", "quitar", "resta", "restar", "borra", "borrar", "menos", "saca", "sacar"].includes(w)
     );
-    if (explicitAmountMatch) {
-      const raw = explicitAmountMatch[1];
-      amount = numberWords[raw] || parseInt(raw, 10) || 1;
-    }
-    const amountLabel = `${amount} punto${amount !== 1 ? "s" : ""}`;
 
-    const isPlayer1 = text.includes(p1Name) || text.includes("jugador 1") || (text.includes("uno") && !text.includes("jugador 2") && !text.includes("jugador dos"));
-    const isPlayer2 = text.includes(p2Name) || text.includes("jugador 2") || text.includes("jugador dos") || (text.includes("dos") && !explicitAmountMatch);
-
-    if (isPlayer1) {
-        if (isWin) {
-            if (isSubtract) {
-                if(removeWin(1)) {
-                    showNotification(`Victoria quitada a ${state.player1.name}`);
-                    speak("Quitando victoria a jugador 1");
-                }
-            } else {
-                awardWin(1);
-                showNotification(`Victoria para ${state.player1.name}`);
-                celebrate(state.player1.name);
-                speak("Asignando victoria a jugador 1");
-            }
-        } else {
-            if (isSubtract) {
-                if(removePoints(1, amount)) {
-                    const msg = `${amountLabel} menos jugador 1`;
-                    showNotification(msg);
-                    speak(`${msg}`);
-                }
-            } else {
-                addPoints(1, amount);
-                highlightPlayer(1);
-                const msg = `${amountLabel} jugador 1`;
-                showNotification(msg);
-                speak(`${msg}`);
-                checkGameWinCondition();
-            }
-        }
-        return;
-    }
-
-    if (isPlayer2 || text.includes("rival")) {
-        if (isWin) {
-            if (isSubtract) {
-                if(removeWin(2)) {
-                    showNotification(`Victoria quitada a ${state.player2.name}`);
-                    speak("Quitando victoria a jugador 2");
-                }
-            } else {
-                awardWin(2);
-                showNotification(`Victoria para ${state.player2.name}`);
-                celebrate(state.player2.name);
-                speak("Asignando victoria a jugador 2");
-            }
-        } else {
-            if (isSubtract) {
-                if(removePoints(2, amount)) {
-                    const msg = `${amountLabel} menos jugador 2`;
-                    showNotification(msg);
-                    speak(`${msg}`);
-                }
-            } else {
-                addPoints(2, amount);
-                highlightPlayer(2);
-                const msg = `${amountLabel} jugador 2`;
-                showNotification(msg);
-                speak(`${msg}`);
-                checkGameWinCondition();
-            }
-        }
-        return;
-    }
+    const isWin = words.some(w =>
+        ["victoria", "ganó", "gano", "ganador", "gana", "ganar"].includes(w)
+    );
     
+    const p1Aliases = [
+        "uno",
+        "1",
+        "primero",
+        "p1",
+        "jugador 1",
+        "jugador uno",
+        "player 1",
+        p1Name
+    ];
+    const p2Aliases = [
+        "dos",
+        "2",
+        "segundo",
+        "p2",
+        "jugador 2",
+        "jugador dos",
+        "player 2",
+        "rival",
+        p2Name
+    ];
+
+    let playerNum = null;
+    if (p1Aliases.some(a => text.includes(a))) {
+        playerNum = 1;
+    } else if (p2Aliases.some(a => text.includes(a))) {
+        playerNum = 2;
+    }
+
+    // También aceptar comandos tipo "punto uno", "punto dos" sin decir 'jugador'
+    if (!playerNum) {
+        if (words.includes("uno") || words.includes("1")) playerNum = 1;
+        else if (words.includes("dos") || words.includes("2")) playerNum = 2;
+    }
+
+    if (!playerNum) return;
+
+    if (isWin) {
+        if (isSubtract) {
+            if (removeWin(playerNum)) {
+                showNotification(`Victoria quitada jugador ${playerNum}`);
+            }
+        } else {
+            awardWin(playerNum);
+            celebrate(playerNum === 1 ? state.player1.name : state.player2.name);
+        }
+        return;
+    }
+
+    let amount = 1;
+    const amountWords = ["un", "uno", "dos", "tres", "cuatro", "cinco"];
+    for (let word of words) {
+        const num = amountWords.indexOf(word);
+        if (num !== -1) {
+            amount = num + 1;
+            break;
+        }
+        const parsed = parseInt(word);
+        if (!isNaN(parsed) && parsed > 0 && parsed <= 5) {
+            amount = parsed;
+            break;
+        }
+    }
+
+    if (isSubtract) {
+        if (removePoints(playerNum, amount)) {
+            showNotification(`${amount} menos jugador ${playerNum}`);
+            speak(`Menos ${playerNum}`);
+        }
+    } else {
+        addPoints(playerNum, amount);
+        highlightPlayer(playerNum);
+        speak(`Punto ${playerNum}`);
+        checkGameWinCondition();
+    }
 }
 
 init();
