@@ -13,7 +13,9 @@ Undo: The "Deshacer" button (or saying "deshacer") goes back one step, even afte
 
 Voice Control: You can use the microphone to add points without touching the screen.
 
-Game History: The app counts how many games each player has won.
+Sessions: One scoreboard for each rival, for example "Yeison vs Papá" and "Yeison vs Hermano". Each one keeps its own wins and the list of its last games (date and score). You change between them at the top.
+
+Backup: Everything is saved in your browser, on this device. With "Exportar respaldo" you download a file with all your sessions, and with "Importar respaldo" you load it on another phone or PC.
 
 Stats: It shows total points, games, longest streak of points in a row and session time.
 
@@ -44,7 +46,7 @@ The first player to reach 11 points wins the game.
 
 **Tests**
 
-The game rules and the voice commands live in game.js, without the page. Run the tests with:
+The game rules and the voice commands live in game.js, and the sessions in sessions.js, without the page. Run the tests with:
 
 ```
 npm test

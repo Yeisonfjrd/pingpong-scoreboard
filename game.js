@@ -13,6 +13,8 @@ export function createMatch(name1 = "Yeison", name2 = "Rival") {
     // 0 o 1: quién saca primero en el game actual. Cambia en cada game nuevo.
     firstServer: 0,
     lastWinner: null,
+    // Un registro por game terminado: { at, winner, score: [a, b] }.
+    games: [],
     stats: {
       totalPoints: 0,
       totalGames: 0,
@@ -51,6 +53,7 @@ export function gameWinner(match) {
 }
 
 function finishGame(match, winner) {
+  match.games = [...(match.games ?? []), { at: Date.now(), winner, score: match.players.map((p) => p.score) }];
   match.players[winner].wins += 1;
   match.players[0].score = 0;
   match.players[1].score = 0;
@@ -99,6 +102,9 @@ export function removeGame(match, player) {
   if (match.players[player].wins === 0) return match;
   const next = withHistory(match);
   next.players[player].wins -= 1;
+  const games = next.games ?? [];
+  const last = games.findLastIndex((g) => g.winner === player);
+  if (last !== -1) next.games = games.filter((_, i) => i !== last);
   next.stats.totalGames = Math.max(0, next.stats.totalGames - 1);
   next.lastWinner = null;
   return next;
