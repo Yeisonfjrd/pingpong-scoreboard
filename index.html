@@ -247,6 +247,27 @@
         </div>
         <p id="wakeStatus" class="mt-4 text-[0.65rem] text-white/50 uppercase tracking-[0.12em]"></p>
       </section>
+
+      <section class="p-5 mb-8 border border-white/10">
+        <h3 class="font-display text-lg tracking-[0.18em] mb-3 text-cinema-white uppercase">Piques <span class="text-white/50">(prueba)</span></h3>
+        <p class="text-[0.7rem] text-white/60 leading-relaxed mb-4">Probá qué tan bien escucha el micrófono la pelota en tu mesa. Dejá el celular al costado, hacé picar la pelota contando vos y compará con lo que cuenta la app. Todavía no suma puntos.</p>
+        <div class="flex items-end justify-between gap-4 mb-3">
+          <p id="bounceCount" class="font-display text-[4rem] leading-none text-cinema-white" aria-live="polite">0</p>
+          <p id="bounceIntervals" class="text-right text-[0.7rem] text-white/60 tracking-[0.08em]"></p>
+        </div>
+        <div class="h-1.5 mb-4 bg-white/10" aria-hidden="true"><div id="bounceLevel" class="h-full bg-cinema-white transition-[width] duration-75" style="width:0%"></div></div>
+        <label for="bounceSens" class="flex justify-between text-[0.65rem] text-cinema-white uppercase tracking-[0.12em] mb-2"><span>Sensibilidad</span><span id="bounceSensValue">8</span></label>
+        <input id="bounceSens" type="range" min="1" max="10" value="8" class="w-full mb-4 accent-white" />
+        <div class="grid grid-cols-2 gap-2">
+          <button id="bounceListenBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Escuchar piques</button>
+          <button id="bounceResetBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Poner en 0</button>
+          <button id="bounceRecordBtn" type="button" disabled class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Grabar 10 s de datos</button>
+          <button id="bounceFileBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Probar con un video</button>
+        </div>
+        <input id="bounceFile" type="file" accept="video/*,audio/*" class="hidden" />
+        <p id="bounceStatus" class="mt-4 text-[0.65rem] text-white/50 uppercase tracking-[0.12em]" role="status"></p>
+        <canvas id="bounceChart" class="hidden w-full h-24 mt-3 bg-white/5" aria-label="Energía de los agudos y piques detectados"></canvas>
+      </section>
     </div>
 
     <div id="notification" class="fixed top-4 left-4 right-4 sm:top-6 sm:right-6 sm:left-auto bg-cinema-black border border-white px-6 py-4 text-[0.75rem] uppercase tracking-[0.12em] shadow-cinema z-50 text-cinema-white transform transition-transform duration-300 translate-x-[150%]"></div>
