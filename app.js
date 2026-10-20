@@ -11,32 +11,24 @@ import {
   renamePlayer,
   parseCommand,
 } from "./game.js";
+import {
+  loadStore,
+  saveStore,
+  activeSession,
+  updateActiveMatch,
+  createSession,
+  switchSession,
+  deleteSession,
+  exportStore,
+  importStore,
+  sessionName,
+} from "./sessions.js";
 
-const STORAGE_KEY = "pingpong_match_v2";
-const OLD_STORAGE_KEY = "pingpong_cinema_data_v1";
+let store = loadStore(localStorage);
+let match = activeSession(store).match;
 
-function loadMatch() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (saved?.players) return saved;
-
-    // Datos de la versión anterior: rescato nombres y games ganados.
-    const old = JSON.parse(localStorage.getItem(OLD_STORAGE_KEY));
-    if (old?.player1) {
-      const match = createMatch(old.player1.name, old.player2.name);
-      match.players[0].wins = old.player1.wins || 0;
-      match.players[1].wins = old.player2.wins || 0;
-      match.stats.totalGames = old.stats?.totalGames || 0;
-      match.stats.totalPoints = old.stats?.totalPoints || 0;
-      return match;
-    }
-  } catch {
-    // Si el guardado está roto, empiezo de cero.
-  }
-  return createMatch();
-}
-
-let match = loadMatch();
+// Pide al navegador que no borre los datos cuando le falta espacio o pasan días sin abrir la página.
+navigator.storage?.persist?.().catch(() => {});
 
 const els = {
   player1Input: document.getElementById("player1"),
@@ -66,13 +58,41 @@ const els = {
   totalGames: document.getElementById("totalGames"),
   longestStreak: document.getElementById("longestStreak"),
   sessionTime: document.getElementById("sessionTime"),
+  sessionSelect: document.getElementById("sessionSelect"),
+  newSessionBtn: document.getElementById("newSessionBtn"),
+  newSessionForm: document.getElementById("newSessionForm"),
+  newRival: document.getElementById("newRival"),
+  cancelNewSession: document.getElementById("cancelNewSession"),
+  gameLog: document.getElementById("gameLog"),
+  gameLogEmpty: document.getElementById("gameLogEmpty"),
+  exportBtn: document.getElementById("exportBtn"),
+  importBtn: document.getElementById("importBtn"),
+  importFile: document.getElementById("importFile"),
+  deleteSessionBtn: document.getElementById("deleteSessionBtn"),
 };
+
+function persist() {
+  store = updateActiveMatch(store, match);
+  try {
+    saveStore(localStorage, store);
+  } catch {
+    showNotification("No se pudo guardar: exportá un respaldo");
+  }
+}
+
+// Cambia el estado entero (otra sesión, respaldo importado) y redibuja.
+function loadSession(nextStore) {
+  store = nextStore;
+  match = activeSession(store).match;
+  persist();
+  updateUI();
+}
 
 // Aplica un cambio, guarda, redibuja y avisa si alguien ganó el game.
 function commit(next) {
   if (next === match) return false;
   match = next;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(match));
+  persist();
   updateUI();
   if (match.lastWinner !== null) {
     const name = match.players[match.lastWinner].name;
@@ -136,9 +156,97 @@ function setupEventListeners() {
   });
 
   els.voiceBtn.addEventListener("click", toggleVoice);
+  setupSessionListeners();
+}
+
+function setupSessionListeners() {
+  els.sessionSelect.addEventListener("change", (e) => {
+    loadSession(switchSession(store, e.target.value));
+    showNotification(sessionName(match));
+  });
+
+  const closeForm = () => {
+    els.newSessionForm.classList.add("hidden");
+    els.newRival.value = "";
+  };
+  els.newSessionBtn.addEventListener("click", () => {
+    els.newSessionForm.classList.toggle("hidden");
+    if (!els.newSessionForm.classList.contains("hidden")) els.newRival.focus();
+  });
+  els.cancelNewSession.addEventListener("click", closeForm);
+  els.newSessionForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    loadSession(createSession(store, els.newRival.value));
+    closeForm();
+    showNotification(`Sesión nueva: ${sessionName(match)}`);
+  });
+
+  els.deleteSessionBtn.addEventListener("click", () => {
+    const name = sessionName(match);
+    if (!confirm(`¿Borrar la sesión ${name}? Se pierden sus games.`)) return;
+    loadSession(deleteSession(store, store.activeId));
+    showNotification(`Sesión borrada: ${name}`);
+  });
+
+  els.exportBtn.addEventListener("click", () => {
+    const blob = new Blob([exportStore(store)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `pingpong-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+
+  els.importBtn.addEventListener("click", () => els.importFile.click());
+  els.importFile.addEventListener("change", async () => {
+    const file = els.importFile.files[0];
+    els.importFile.value = "";
+    if (!file) return;
+    try {
+      const before = store.sessions.length;
+      loadSession(importStore(store, await file.text()));
+      showNotification(`Respaldo importado: ${store.sessions.length - before} sesiones nuevas`);
+    } catch (err) {
+      showNotification(err.message);
+    }
+  });
+}
+
+function renderSessions() {
+  els.sessionSelect.replaceChildren(
+    ...store.sessions.map((s) => {
+      const option = document.createElement("option");
+      option.value = s.id;
+      option.textContent = sessionName(s.match);
+      option.selected = s.id === store.activeId;
+      return option;
+    }),
+  );
+}
+
+const dateFormat = new Intl.DateTimeFormat("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+
+function renderGameLog() {
+  const games = (match.games ?? []).slice(-10).reverse();
+  els.gameLogEmpty.classList.toggle("hidden", games.length > 0);
+  els.gameLog.replaceChildren(
+    ...games.map((g) => {
+      const li = document.createElement("li");
+      li.className = "flex justify-between border-b border-white/10 py-1";
+      const when = document.createElement("span");
+      when.className = "text-white/50";
+      when.textContent = dateFormat.format(g.at);
+      const result = document.createElement("span");
+      result.textContent = `${match.players[g.winner].name} ${Math.max(...g.score)}-${Math.min(...g.score)}`;
+      li.append(when, result);
+      return li;
+    }),
+  );
 }
 
 function updateUI() {
+  renderSessions();
+  renderGameLog();
   const server = currentServer(match);
   match.players.forEach((p, i) => {
     els.names[i].textContent = p.name;
