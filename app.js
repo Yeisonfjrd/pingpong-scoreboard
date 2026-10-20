@@ -23,6 +23,16 @@ import {
   importStore,
   sessionName,
 } from "./sessions.js";
+import {
+  DEFAULT_BINDINGS,
+  actionForKey,
+  loadBindings,
+  saveBindings,
+  startLearning,
+  press,
+  skip,
+  keyLabel,
+} from "./controls.js";
 
 let store = loadStore(localStorage);
 let match = activeSession(store).match;
@@ -69,6 +79,12 @@ const els = {
   importBtn: document.getElementById("importBtn"),
   importFile: document.getElementById("importFile"),
   deleteSessionBtn: document.getElementById("deleteSessionBtn"),
+  controlsInfo: document.getElementById("controlsInfo"),
+  learnPrompt: document.getElementById("learnPrompt"),
+  learnBtn: document.getElementById("learnBtn"),
+  resetControlsBtn: document.getElementById("resetControlsBtn"),
+  skipLearnBtn: document.getElementById("skipLearnBtn"),
+  wakeStatus: document.getElementById("wakeStatus"),
 };
 
 function persist() {
@@ -125,7 +141,126 @@ function undoLast() {
 function init() {
   updateUI();
   setupEventListeners();
+  setupControls();
+  keepScreenOn();
   startTimer();
+  registerServiceWorker();
+}
+
+// ---------- Control Bluetooth / teclado ----------
+
+let bindings = loadBindings(localStorage);
+let learning = null;
+
+const ACTION_LABELS = {
+  p1: () => `Punto ${match.players[0].name}`,
+  p2: () => `Punto ${match.players[1].name}`,
+  undo: () => "Deshacer",
+};
+
+function setupControls() {
+  document.addEventListener("keydown", (e) => {
+    if (learning) {
+      e.preventDefault();
+      learning = press(learning, e.key);
+      if (learning.done) finishLearning();
+      renderControls();
+      return;
+    }
+    const action = actionForKey(bindings, e);
+    if (!action) return;
+    e.preventDefault();
+    if (action === "p1") point(0);
+    else if (action === "p2") point(1);
+    else undoLast();
+  });
+
+  els.learnBtn.addEventListener("click", () => {
+    learning = learning ? null : startLearning();
+    els.learnBtn.blur();
+    renderControls();
+  });
+  els.skipLearnBtn.addEventListener("click", () => {
+    learning = skip(learning);
+    if (learning.done) finishLearning();
+    renderControls();
+  });
+  els.resetControlsBtn.addEventListener("click", () => {
+    learning = null;
+    bindings = DEFAULT_BINDINGS;
+    localStorage.removeItem("pingpong_controls_v1");
+    renderControls();
+    showNotification("Botones de fábrica");
+  });
+  renderControls();
+}
+
+function finishLearning() {
+  bindings = learning.learned;
+  saveBindings(localStorage, bindings);
+  learning = null;
+  showNotification("Control configurado");
+}
+
+function renderControls() {
+  els.controlsInfo.replaceChildren(
+    ...Object.keys(ACTION_LABELS).map((action) => {
+      const li = document.createElement("li");
+      li.className = "flex justify-between border-b border-white/10 py-1";
+      const what = document.createElement("span");
+      what.textContent = ACTION_LABELS[action]();
+      const keys = document.createElement("span");
+      keys.className = "text-white/60";
+      keys.textContent = bindings[action].length ? bindings[action].map(keyLabel).join(" / ") : "—";
+      li.append(what, keys);
+      return li;
+    }),
+  );
+
+  const steps = ["p1", "p2", "undo"];
+  els.learnPrompt.classList.toggle("hidden", !learning);
+  els.skipLearnBtn.classList.toggle("hidden", !learning || steps[learning.step] !== "undo");
+  els.learnBtn.textContent = learning ? "Cancelar" : "Configurar botones";
+  if (learning) {
+    const what = ACTION_LABELS[steps[learning.step]]().toLowerCase();
+    els.learnPrompt.textContent = learning.rejected
+      ? `Ese botón ya está usado. Apretá otro para: ${what}`
+      : `Apretá el botón para: ${what}`;
+  }
+}
+
+// ---------- Pantalla encendida ----------
+
+let wakeLock = null;
+
+async function keepScreenOn() {
+  if (!("wakeLock" in navigator)) {
+    els.wakeStatus.textContent = "Este navegador no puede dejar la pantalla encendida";
+    return;
+  }
+  const request = async () => {
+    if (document.visibilityState !== "visible" || wakeLock) return;
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+      els.wakeStatus.textContent = "● Pantalla siempre encendida";
+      wakeLock.addEventListener("release", () => {
+        wakeLock = null;
+      });
+    } catch {
+      els.wakeStatus.textContent = "Tocá la pantalla para dejarla encendida";
+    }
+  };
+  // El navegador suelta el bloqueo al cambiar de pestaña: lo pido de nuevo al volver.
+  document.addEventListener("visibilitychange", request);
+  document.addEventListener("click", request);
+  await request();
+}
+
+// ---------- Sin internet ----------
+
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
 
 function setupEventListeners() {
@@ -246,6 +381,7 @@ function renderGameLog() {
 
 function updateUI() {
   renderSessions();
+  if (els.controlsInfo.children.length) renderControls();
   renderGameLog();
   const server = currentServer(match);
   match.players.forEach((p, i) => {

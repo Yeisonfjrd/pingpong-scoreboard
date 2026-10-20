@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "npx live-server --port=3000 --open=/index.html",
     "start": "npx live-server --port=3000 --open=/index.html",
-    "test": "node --test"
+    "test": "node --test",
+    "build": "tailwindcss -i tailwind.css -o styles.css --minify",
+    "dev:css": "tailwindcss -i tailwind.css -o styles.css --watch"
   },
   "keywords": [
     "ping-pong",
@@ -15,5 +17,8 @@
   ],
   "author": "",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
 }
