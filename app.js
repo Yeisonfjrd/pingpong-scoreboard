@@ -35,6 +35,8 @@ import {
 } from "./controls.js";
 import { setupBounceTest } from "./bounce-ui.js";
 import { setupCameraTest } from "./camera-ui.js";
+import { loadCalibration } from "./camera.js";
+import { startAuto } from "./auto.js";
 
 let store = loadStore(localStorage);
 let match = activeSession(store).match;
@@ -56,16 +58,13 @@ const els = {
   notification: document.getElementById("notification"),
   celebration: document.getElementById("celebration"),
   celebrationText: document.getElementById("celebrationText"),
-  p1Plus: document.getElementById("p1Plus"),
-  p2Plus: document.getElementById("p2Plus"),
+  panels: [document.getElementById("panel1"), document.getElementById("panel2")],
   p1Minus: document.getElementById("p1Minus"),
   p2Minus: document.getElementById("p2Minus"),
   p1Win: document.getElementById("p1Win"),
   p2Win: document.getElementById("p2Win"),
   undoBtn: document.getElementById("undoBtn"),
   resetScore: document.getElementById("resetScore"),
-  toggleStats: document.getElementById("toggleStats"),
-  statsSection: document.getElementById("statsSection"),
   totalPoints: document.getElementById("totalPoints"),
   totalGames: document.getElementById("totalGames"),
   longestStreak: document.getElementById("longestStreak"),
@@ -87,6 +86,23 @@ const els = {
   resetControlsBtn: document.getElementById("resetControlsBtn"),
   skipLearnBtn: document.getElementById("skipLearnBtn"),
   wakeStatus: document.getElementById("wakeStatus"),
+  sessionBtn: document.getElementById("sessionBtn"),
+  sessionTitle: document.getElementById("sessionTitle"),
+  settings: document.getElementById("settings"),
+  settingsBtn: document.getElementById("settingsBtn"),
+  settingsClose: document.getElementById("settingsClose"),
+  groupMatch: document.getElementById("groupMatch"),
+  groupAuto: document.getElementById("groupAuto"),
+  liveLine: document.getElementById("liveLine"),
+  autoBtn: document.getElementById("autoBtn"),
+  autoVideo: document.getElementById("autoVideo"),
+  autoChecklist: document.getElementById("autoChecklist"),
+  leftPlayer: document.getElementById("leftPlayer"),
+  proposal: document.getElementById("proposal"),
+  proposalText: document.getElementById("proposalText"),
+  proposalBar: document.getElementById("proposalBar"),
+  proposalCancel: document.getElementById("proposalCancel"),
+  bounceSens: document.getElementById("bounceSens"),
 };
 
 function persist() {
@@ -122,6 +138,7 @@ function commit(next) {
 }
 
 function point(player, amount = 1) {
+  if (proposal) cancelProposal(false);
   let next = match;
   for (let i = 0; i < amount; i++) next = addPoint(next, player);
   commit(next);
@@ -137,6 +154,11 @@ function subtract(player, amount = 1) {
 }
 
 function undoLast() {
+  // Con un punto propuesto, "deshacer" lo cancela en vez de deshacer el punto anterior.
+  if (proposal) {
+    cancelProposal(true);
+    return;
+  }
   if (commit(undo(match))) speak("Deshecho");
 }
 
@@ -146,6 +168,8 @@ function init() {
   setupControls();
   setupBounceTest(showNotification);
   setupCameraTest(showNotification);
+  setupSettings();
+  setupAuto();
   keepScreenOn();
   startTimer();
   registerServiceWorker();
@@ -275,8 +299,7 @@ function setupEventListeners() {
     commit(renamePlayer(match, 1, e.target.value || "Jugador 2"));
   });
 
-  els.p1Plus.addEventListener("click", () => point(0));
-  els.p2Plus.addEventListener("click", () => point(1));
+  els.panels.forEach((panel, i) => panel.addEventListener("click", () => point(i)));
   els.p1Minus.addEventListener("click", () => subtract(0));
   els.p2Minus.addEventListener("click", () => subtract(1));
   els.p1Win.addEventListener("click", () => commit(awardGame(match, 0)));
@@ -286,12 +309,6 @@ function setupEventListeners() {
   els.resetScore.addEventListener("click", () => {
     commit(resetGame(match));
     speak("Reiniciado");
-  });
-
-  els.toggleStats.addEventListener("click", () => {
-    els.statsSection.classList.toggle("hidden");
-    const isHidden = els.statsSection.classList.contains("hidden");
-    els.toggleStats.textContent = isHidden ? "Mostrar Stats" : "Ocultar Stats";
   });
 
   els.voiceBtn.addEventListener("click", toggleVoice);
@@ -385,6 +402,12 @@ function renderGameLog() {
 
 function updateUI() {
   renderSessions();
+  els.sessionTitle.textContent = sessionName(match);
+  document.querySelectorAll("[data-name]").forEach((el) => {
+    el.textContent = match.players[Number(el.dataset.name)].name;
+  });
+  match.players.forEach((p, i) => els.panels[i].setAttribute("aria-label", `Punto para ${p.name}`));
+  renderAutoSetup();
   if (els.controlsInfo.children.length) renderControls();
   renderGameLog();
   const server = currentServer(match);
@@ -416,13 +439,13 @@ function highlightPlayer(player) {
 
 function showNotification(msg) {
   els.notification.textContent = msg;
-  els.notification.classList.remove("translate-x-[150%]");
-  els.notification.classList.add("translate-x-0");
-
-  setTimeout(() => {
-    els.notification.classList.remove("translate-x-0");
-    els.notification.classList.add("translate-x-[150%]");
-  }, 3000);
+  els.notification.classList.remove("-translate-y-[200%]");
+  els.notification.classList.add("translate-y-0");
+  clearTimeout(showNotification.timer);
+  showNotification.timer = setTimeout(() => {
+    els.notification.classList.remove("translate-y-0");
+    els.notification.classList.add("-translate-y-[200%]");
+  }, 2500);
 }
 
 function celebrate() {
@@ -430,7 +453,7 @@ function celebrate() {
   els.celebration.classList.add("flex");
   els.celebration.classList.add("animate-fadeOut");
 
-  els.celebrationText.textContent = "VICTORIA";
+  els.celebrationText.textContent = "GAME";
   els.celebrationText.classList.add("animate-celebrateZoom");
 
   setTimeout(() => {
@@ -485,9 +508,9 @@ function startVoice() {
 
     recognition.onstart = () => {
       isListening = true;
-      els.voiceBtn.classList.add("active", "bg-white/10", "border-white");
-      els.voiceStatus.textContent = "Escuchando...";
-      els.voiceStatus.classList.add("animate-blink");
+      els.voiceBtn.setAttribute("aria-pressed", "true");
+      els.voiceStatus.textContent = "Escuchando";
+      renderLiveLine();
     };
 
     recognition.onend = () => {
@@ -500,9 +523,8 @@ function startVoice() {
           }
         }, 100);
       } else {
-        els.voiceBtn.classList.remove("active", "bg-white/10", "border-white");
-        els.voiceStatus.textContent = "Presiona para activar";
-        els.voiceStatus.classList.remove("animate-blink");
+        els.voiceBtn.setAttribute("aria-pressed", "false");
+        renderLiveLine();
       }
     };
 
@@ -548,9 +570,18 @@ function startVoice() {
 function stopVoice() {
   isListening = false;
   if (recognition) recognition.stop();
-  els.voiceBtn.classList.remove("active", "bg-white/10", "border-white");
-  els.voiceStatus.textContent = "Presiona para activar";
-  els.voiceStatus.classList.remove("animate-blink");
+  els.voiceBtn.setAttribute("aria-pressed", "false");
+  els.lastCommand.textContent = "";
+  renderLiveLine();
+}
+
+// La línea de abajo solo aparece cuando la app está escuchando o mirando.
+function renderLiveLine() {
+  const parts = [];
+  if (isListening) parts.push("Voz");
+  if (auto) parts.push("Automático");
+  els.voiceStatus.textContent = parts.length ? `${parts.join(" + ")} activo` : "";
+  els.liveLine.classList.toggle("hidden", parts.length === 0);
 }
 
 let lastCommandTime = 0;
@@ -560,6 +591,11 @@ function processVoiceCommand(text) {
   const now = Date.now();
   if (now - lastCommandTime < COMMAND_DEBOUNCE) return;
   lastCommandTime = now;
+
+  if (proposal && /\b(no|cancela|cancelar|cancelá)\b/i.test(text)) {
+    cancelProposal(true);
+    return;
+  }
 
   const command = parseCommand(text, match.players.map((p) => p.name));
   if (!command) return;
@@ -586,6 +622,141 @@ function processVoiceCommand(text) {
     case "point":
       point(command.player, command.amount);
       break;
+  }
+}
+
+// ---------- Ajustes ----------
+
+function setupSettings() {
+  const open = (group) => {
+    if (group) group.open = true;
+    els.settings.showModal();
+    group?.scrollIntoView({ block: "start" });
+  };
+  els.settingsBtn.addEventListener("click", () => open());
+  els.sessionBtn.addEventListener("click", () => open(els.groupMatch));
+  els.settingsClose.addEventListener("click", () => els.settings.close());
+  // Al cerrar, refrescar lo que se pudo cambiar adentro (por ejemplo, la calibración).
+  els.settings.addEventListener("close", updateUI);
+  // Tocar fuera del contenido no cierra: es pantalla completa, se cierra con la X o con Escape.
+}
+
+// ---------- Puntaje automático ----------
+
+const LEFT_PLAYER_KEY = "pingpong_left_player";
+const PROPOSAL_MS = 2000;
+let auto = null;
+let proposal = null;
+
+const leftPlayer = () => Number(localStorage.getItem(LEFT_PLAYER_KEY) ?? 0);
+
+function setupAuto() {
+  els.leftPlayer.addEventListener("change", () => {
+    localStorage.setItem(LEFT_PLAYER_KEY, els.leftPlayer.value);
+  });
+  els.proposalCancel.addEventListener("click", () => cancelProposal(true));
+  els.autoBtn.addEventListener("click", toggleAuto);
+}
+
+function renderAutoSetup() {
+  const left = leftPlayer();
+  els.leftPlayer.replaceChildren(
+    ...match.players.map((p, i) => {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = p.name;
+      option.selected = i === left;
+      return option;
+    }),
+  );
+  const calibrated = Boolean(loadCalibration(localStorage));
+  const items = [
+    [calibrated, calibrated ? "mesa calibrada" : "marcar las 4 esquinas de la mesa (abajo, en Cámara)"],
+    [true, "el micrófono y la cámara se piden al activar el modo"],
+  ];
+  els.autoChecklist.replaceChildren(
+    ...items.map(([ok, text]) => {
+      const li = document.createElement("li");
+      li.className = ok ? "text-cinema-white" : "text-white/60";
+      li.textContent = `${ok ? "Listo:" : "Falta:"} ${text}`;
+      return li;
+    }),
+  );
+}
+
+async function toggleAuto() {
+  if (auto) {
+    auto.stop();
+    auto = null;
+    cancelProposal(false);
+    els.autoBtn.setAttribute("aria-pressed", "false");
+    els.autoVideo.classList.add("hidden");
+    renderLiveLine();
+    showNotification("Automático apagado");
+    return;
+  }
+  const calibration = loadCalibration(localStorage);
+  if (!calibration) {
+    showNotification("Primero calibrá la mesa");
+    els.groupAuto.open = true;
+    els.settings.showModal();
+    els.groupAuto.scrollIntoView({ block: "start" });
+    return;
+  }
+  try {
+    els.autoVideo.classList.remove("hidden");
+    auto = await startAuto({
+      video: els.autoVideo,
+      calibration,
+      sensitivity: 13 - Number(els.bounceSens.value),
+      getLeftPlayer: leftPlayer,
+      onPropose: propose,
+    });
+    els.autoBtn.setAttribute("aria-pressed", "true");
+    renderLiveLine();
+    showNotification("Automático activo");
+  } catch {
+    auto = null;
+    els.autoVideo.classList.add("hidden");
+    showNotification("No pude abrir la cámara o el micrófono");
+  }
+}
+
+function propose(winner) {
+  if (proposal) return;
+  auto?.pause();
+  const name = match.players[winner].name;
+  els.proposalText.textContent = `Punto para ${name}`;
+  els.proposal.classList.remove("hidden");
+  // Reinicia la animación de la barra.
+  els.proposalBar.style.animation = "none";
+  void els.proposalBar.offsetWidth;
+  els.proposalBar.style.animation = `drain ${PROPOSAL_MS}ms linear forwards`;
+  speak(`Punto ${name}`);
+  proposal = {
+    winner,
+    timer: setTimeout(() => {
+      const { winner: w } = proposal;
+      closeProposal();
+      point(w);
+    }, PROPOSAL_MS),
+  };
+}
+
+function closeProposal() {
+  if (!proposal) return;
+  clearTimeout(proposal.timer);
+  proposal = null;
+  els.proposal.classList.add("hidden");
+  auto?.resume();
+}
+
+function cancelProposal(announce) {
+  if (!proposal) return;
+  closeProposal();
+  if (announce) {
+    showNotification("Punto cancelado");
+    speak("Cancelado");
   }
 }
 

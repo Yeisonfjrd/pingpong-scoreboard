@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <title>Marcador Ping-Pong</title>
 
@@ -23,279 +23,209 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   </head>
-  
-  <body class="min-h-screen bg-gradient-to-b from-[#0A0A0A] via-[#1A1A1A] to-[#0A0A0A] text-cinema-white px-4 py-6 overflow-x-hidden no-tap-highlight font-cinema">
-    
-    <div class="max-w-md w-full mx-auto">
-      <header class="pb-6 mb-10 text-center border-b select-none border-white/10">
-        <div class="flex justify-center mb-4">
-          <div class="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center text-white">
-            <svg
-              viewBox="0 0 64 64"
-              aria-hidden="true"
-              class="w-full h-full"
-            >
-              <ellipse
-                cx="22"
-                cy="24"
-                rx="13"
-                ry="15"
-                fill="currentColor"
-                opacity="0.9"
-                transform="rotate(-30 22 24)"
-              />
-              <ellipse
-                cx="22"
-                cy="24"
-                rx="10"
-                ry="12"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="0.5"
-                opacity="0.3"
-                transform="rotate(-30 22 24)"
-              />
-              <rect
-                x="30"
-                y="34"
-                width="5.5"
-                height="18"
-                rx="2.75"
-                fill="currentColor"
-                opacity="0.85"
-                transform="rotate(-30 32.75 43)"
-              />
-              <line
-                x1="30.5"
-                y1="35"
-                x2="30.5"
-                y2="50"
-                stroke="currentColor"
-                stroke-width="0.4"
-                opacity="0.2"
-                transform="rotate(-30 30.5 42.5)"
-              />
-              <circle
-                cx="46"
-                cy="14"
-                r="5"
-                fill="currentColor"
-                opacity="0.95"
-              />
-              <circle
-                cx="46"
-                cy="14"
-                r="5"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="0.6"
-                opacity="0.3"
-              />
-              <path
-                d="M 43 14 Q 46 11 49 14"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="0.5"
-                opacity="0.25"
-              />
-              <circle cx="44" cy="12.5" r="0.8" fill="currentColor" opacity="0.2" />
-              <line
-                x1="50"
-                y1="18"
-                x2="44"
-                y2="28"
-                stroke="currentColor"
-                stroke-width="0.6"
-                opacity="0.15"
-                stroke-dasharray="1.5 2"
-              />
-            </svg>
-          </div>
-        </div>
-        
-        <h1 class="font-display text-4xl sm:text-5xl tracking-[0.25em] text-cinema-white mb-1 uppercase">
-          Ping-Pong
-        </h1>
-        <p class="text-[0.7rem] text-cinema-white uppercase tracking-[0.2em] font-light">
-          Marcador de Ping-Pong
-        </p>
+  <body class="h-dvh overflow-hidden bg-cinema-black font-cinema text-cinema-white no-tap-highlight">
+    <svg class="hidden" aria-hidden="true">
+      <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8" /></symbol>
+      <symbol id="i-auto" viewBox="0 0 24 24"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3" /><circle cx="12" cy="12" r="3" /></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" /></symbol>
+      <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12" /></symbol>
+    </svg>
+
+    <div class="mx-auto flex h-full max-w-3xl flex-col landscape:max-w-none">
+      <!-- Barra de arriba: la sesión y 3 botones. Todo lo demás vive en Ajustes. -->
+      <header class="flex shrink-0 items-center gap-1 px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2">
+        <button id="sessionBtn" type="button" class="flex min-h-[44px] min-w-0 flex-1 items-center gap-2 text-left">
+          <span class="truncate font-display text-xl tracking-[0.14em]" id="sessionTitle">Yeison vs Rival</span>
+        </button>
+        <button id="voiceBtn" type="button" class="icon-btn" aria-pressed="false" aria-label="Voz">
+          <svg class="h-5 w-5 fill-none stroke-current" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-mic" /></svg>
+        </button>
+        <button id="autoBtn" type="button" class="icon-btn" aria-pressed="false" aria-label="Puntaje automático">
+          <svg class="h-5 w-5 fill-none stroke-current" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-auto" /></svg>
+        </button>
+        <button id="settingsBtn" type="button" class="icon-btn" aria-label="Ajustes">
+          <svg class="h-5 w-5 fill-none stroke-current" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-gear" /></svg>
+        </button>
       </header>
 
-      <section class="mb-6">
-        <label for="sessionSelect" class="block text-[0.7rem] text-cinema-white uppercase tracking-[0.18em] mb-2">Sesión</label>
-        <div class="flex gap-2">
-          <select id="sessionSelect" class="flex-1 min-w-0 uppercase tracking-widest bg-cinema-black border rounded-sm border-white/15 text-cinema-white text-sm px-4 py-3 focus:outline-none focus:border-white"></select>
-          <button id="newSessionBtn" type="button" class="px-4 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">+ Nueva</button>
-        </div>
-        <form id="newSessionForm" class="hidden mt-2 flex gap-2">
-          <input id="newRival" type="text" maxlength="24" placeholder="Nombre del rival" autocomplete="off" class="flex-1 min-w-0 placeholder:text-white/30 uppercase tracking-widest bg-cinema-black border rounded-sm border-white/15 text-cinema-white text-sm px-4 py-3 focus:outline-none focus:border-white" />
-          <button type="submit" class="px-4 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Crear</button>
-          <button id="cancelNewSession" type="button" aria-label="Cancelar" class="px-4 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">✕</button>
-        </form>
-      </section>
-
-      <section class="mb-8 space-y-4">
-        <div>
-          <label for="player1" class="block text-[0.7rem] text-cinema-white uppercase tracking-[0.18em] mb-2">Jugador 1</label>
-          <input id="player1" type="text" value="Yeison" placeholder="Nombre" class="w-full px-4 py-3 text-sm transition bg-transparent border rounded-sm border-white/15 text-cinema-white placeholder:text-white/30 focus:outline-none focus:border-white focus:bg-white/5 uppercase tracking-widest" />
-        </div>
-        <div>
-          <label for="player2" class="block text-[0.7rem] text-cinema-white uppercase tracking-[0.18em] mb-2">Jugador 2</label>
-          <input id="player2" type="text" value="Rival" placeholder="Nombre" class="w-full px-4 py-3 text-sm transition bg-transparent border rounded-sm border-white/15 text-cinema-white placeholder:text-white/30 focus:outline-none focus:border-white focus:bg-white/5 uppercase tracking-widest" />
-        </div>
-      </section>
-
-      <section class="relative mb-8 overflow-hidden border border-white/15 bg-gradient-to-br from-white/5 via-transparent to-transparent">
-        <div class="grid grid-cols-[1fr_auto_1fr]"> 
-          
-          <div id="panel1" class="relative px-5 py-7 text-center transition-all duration-300">
-            <div id="flash1" class="absolute inset-0 border-2 border-white/90 hidden pointer-events-none"></div>
-            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.2em] mb-4">Jugador 1</p>
-            <p id="name1" class="font-display text-xl tracking-[0.16em] text-cinema-white mb-4 min-h-[1.75rem]">Jugador 1</p>
-            <p id="serve1" class="invisible -mt-2 mb-3 text-[0.65rem] uppercase tracking-[0.2em] text-cinema-white"><span aria-hidden="true">●</span> Saca</p>
-            <p id="score1" class="font-display text-[4.5rem] sm:text-[5.5rem] leading-none text-cinema-white mb-4 relative">0</p>
-            <div class="mt-4 text-[0.7rem] text-cinema-white uppercase tracking-[0.16em]">
-              Partidas ganadas <span id="wins1" class="ml-1 font-medium text-cinema-white">0</span>
-            </div>
-          </div>
-
-          <div class="w-px bg-white/15"></div>
-
-          <div id="panel2" class="relative px-5 py-7 text-center transition-all duration-300">
-            <div id="flash2" class="absolute inset-0 border-2 border-white/90 hidden pointer-events-none"></div>
-            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.2em] mb-4">Jugador 2</p>
-            <p id="name2" class="font-display text-xl tracking-[0.16em] text-cinema-white mb-4 min-h-[1.75rem]">Jugador 2</p>
-            <p id="serve2" class="invisible -mt-2 mb-3 text-[0.65rem] uppercase tracking-[0.2em] text-cinema-white"><span aria-hidden="true">●</span> Saca</p>
-            <p id="score2" class="font-display text-[4.5rem] sm:text-[5.5rem] leading-none text-cinema-white mb-4 relative">0</p>
-            <div class="mt-4 text-[0.7rem] text-cinema-white uppercase tracking-[0.16em]">
-              Partidas ganadas <span id="wins2" class="ml-1 font-medium text-cinema-white">0</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="statsSection" class="hidden p-5 mb-8 border border-white/10">
-        <h3 class="font-display text-lg tracking-[0.18em] mb-4 text-cinema-white uppercase">Estadísticas</h3>
-        <div class="grid grid-cols-2 gap-4 mt-2">
-          <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
-            <p id="totalPoints" class="mb-1 text-3xl font-display text-cinema-white">0</p>
-            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Puntos Totales</p>
-          </div>
-          <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
-            <p id="totalGames" class="mb-1 text-3xl font-display text-cinema-white">0</p>
-            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Partidas</p>
-          </div>
-          <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
-            <p id="longestStreak" class="mb-1 text-3xl font-display text-cinema-white">0</p>
-            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Racha Max</p>
-          </div>
-          <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
-            <p id="sessionTime" class="mb-1 text-3xl font-display text-cinema-white">0m</p>
-            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Tiempo</p>
-          </div>
-        </div>
-
-        <h3 class="font-display text-lg tracking-[0.18em] mt-6 mb-3 text-cinema-white uppercase">Últimos games</h3>
-        <ol id="gameLog" class="space-y-1 text-[0.75rem] text-cinema-white"></ol>
-        <p id="gameLogEmpty" class="text-[0.7rem] text-white/50 uppercase tracking-[0.12em]">Todavía no hay games terminados</p>
-
-        <div class="grid grid-cols-2 gap-2 mt-6">
-          <button id="exportBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Exportar respaldo</button>
-          <button id="importBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Importar respaldo</button>
-          <button id="deleteSessionBtn" type="button" class="col-span-2 px-3 py-3 text-white/70 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Borrar esta sesión</button>
-        </div>
-        <input id="importFile" type="file" accept="application/json,.json" class="hidden" />
-      </section>
-
-      <section class="relative px-6 py-8 mb-8 text-center border border-white/15">
-        <button id="voiceBtn" class="relative flex items-center justify-center w-24 h-24 mx-auto mb-5 text-3xl transition bg-transparent border-2 rounded-full border-white/30 text-cinema-white hover:border-white hover:bg-white/10 group">
-            <span class="absolute inset-[-8px] rounded-full border border-white/30 hidden group-[.active]:block group-[.active]:animate-ripple"></span>
-            🎤
+      <!-- El marcador: tocar la mitad de un jugador le suma un punto. -->
+      <main class="grid min-h-0 flex-1 grid-cols-2 border-y border-white/10">
+        <button id="panel1" type="button" class="relative flex min-h-0 flex-col items-center justify-center gap-2 border-r border-white/10 px-2 transition-colors duration-150 active:bg-white/5" aria-label="Punto para el jugador 1">
+          <span id="flash1" class="pointer-events-none absolute inset-0 hidden border-2 border-white/90"></span>
+          <span id="name1" class="max-w-full truncate font-display text-2xl tracking-[0.16em] landscape:text-[min(7vh,3rem)]">Jugador 1</span>
+          <span id="serve1" class="invisible text-[0.7rem] uppercase tracking-[0.2em] text-cinema-white"><span aria-hidden="true">●</span> Saca</span>
+          <span id="score1" class="tabular font-display text-[min(46vw,40vh)] leading-[0.85] landscape:text-[min(46vh,30vw)]">0</span>
+          <span class="text-[0.7rem] uppercase tracking-[0.16em] text-white/60">Games <span id="wins1" class="tabular text-cinema-white">0</span></span>
         </button>
-        <p id="voiceStatus" class="text-[0.7rem] text-cinema-white uppercase tracking-[0.16em] mb-4">
-          Presiona para activar
+        <button id="panel2" type="button" class="relative flex min-h-0 flex-col items-center justify-center gap-2 px-2 transition-colors duration-150 active:bg-white/5" aria-label="Punto para el jugador 2">
+          <span id="flash2" class="pointer-events-none absolute inset-0 hidden border-2 border-white/90"></span>
+          <span id="name2" class="max-w-full truncate font-display text-2xl tracking-[0.16em] landscape:text-[min(7vh,3rem)]">Jugador 2</span>
+          <span id="serve2" class="invisible text-[0.7rem] uppercase tracking-[0.2em] text-cinema-white"><span aria-hidden="true">●</span> Saca</span>
+          <span id="score2" class="tabular font-display text-[min(46vw,40vh)] leading-[0.85] landscape:text-[min(46vh,30vw)]">0</span>
+          <span class="text-[0.7rem] uppercase tracking-[0.16em] text-white/60">Games <span id="wins2" class="tabular text-cinema-white">0</span></span>
+        </button>
+      </main>
+
+      <!-- Abajo: deshacer, y lo que está escuchando o mirando la app. -->
+      <footer class="shrink-0 px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <p id="liveLine" class="hidden min-h-[1.25rem] pb-2 text-center text-[0.7rem] uppercase tracking-[0.14em] text-white/60" aria-live="polite">
+          <span id="voiceStatus"></span> <span id="lastCommand" class="normal-case italic text-cinema-white"></span>
         </p>
-        <div id="lastCommand" class="bg-white/5 border border-white/10 px-4 py-3 text-[0.75rem] text-cinema-white italic flex items-center justify-center min-h-[3.25rem]">
-          Esperando comando...
+        <div class="flex items-stretch gap-2">
+          <button id="undoBtn" type="button" class="btn flex-1">
+            <svg class="h-4 w-4 fill-none stroke-current" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-undo" /></svg>
+            Deshacer
+          </button>
+          <video id="autoVideo" playsinline muted class="hidden aspect-video h-11 border border-white/25 object-cover" aria-label="Lo que ve la cámara"></video>
         </div>
-        <div id="aiSuggestion" class="mt-4 border border-white/10 border-l-4 border-l-white bg-white/5 px-4 py-3 text-[0.7rem] text-cinema-off-white leading-relaxed text-left hidden animate-slideIn"></div>
-      </section>
-
-      <section class="grid grid-cols-2 sm:grid-cols-2 gap-3 mb-8">
-        <button id="p1Plus" class="border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">+1 P1</button>
-        <button id="p2Plus" class="border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">+1 P2</button>
-        <button id="p1Minus" class="border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-3 bg-transparent text-white/70 hover:bg-white/10 hover:border-white transition">-1 P1</button>
-        <button id="p2Minus" class="border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-3 bg-transparent text-white/70 hover:bg-white/10 hover:border-white transition">-1 P2</button>
-        
-        <button id="p1Win" class="col-span-1 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Gana P1</button>
-        <button id="p2Win" class="col-span-1 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Gana P2</button>
-        
-        <button id="undoBtn" class="col-span-2 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-5 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Deshacer</button>
-        <button id="resetScore" class="col-span-2 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-5 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Reiniciar Game</button>
-        <button id="toggleStats" class="col-span-2 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-5 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Mostrar Stats</button>
-      </section>
-
-      <section class="p-5 mb-8 border border-white/10">
-        <h3 class="font-display text-lg tracking-[0.18em] mb-3 text-cinema-white uppercase">Control Bluetooth</h3>
-        <p class="text-[0.7rem] text-white/60 leading-relaxed mb-4">Un control de presentaciones o cualquier teclado. Conectalo por Bluetooth al celular y cada botón suma, sin tocar la pantalla.</p>
-        <ul id="controlsInfo" class="space-y-1 text-[0.75rem] text-cinema-white"></ul>
-        <p id="learnPrompt" class="hidden mt-4 border border-white px-4 py-3 text-[0.75rem] uppercase tracking-[0.12em] text-cinema-white animate-blink" role="status" aria-live="polite"></p>
-        <div class="grid grid-cols-2 gap-2 mt-4">
-          <button id="learnBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Configurar botones</button>
-          <button id="resetControlsBtn" type="button" class="px-3 py-3 text-white/70 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Restablecer</button>
-          <button id="skipLearnBtn" type="button" class="hidden col-span-2 px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Mi control no tiene más botones</button>
-        </div>
-        <p id="wakeStatus" class="mt-4 text-[0.65rem] text-white/50 uppercase tracking-[0.12em]"></p>
-      </section>
-
-      <section class="p-5 mb-8 border border-white/10">
-        <h3 class="font-display text-lg tracking-[0.18em] mb-3 text-cinema-white uppercase">Piques <span class="text-white/50">(prueba)</span></h3>
-        <p class="text-[0.7rem] text-white/60 leading-relaxed mb-4">Probá qué tan bien escucha el micrófono la pelota en tu mesa. Dejá el celular al costado, hacé picar la pelota contando vos y compará con lo que cuenta la app. Todavía no suma puntos.</p>
-        <div class="flex items-end justify-between gap-4 mb-3">
-          <p id="bounceCount" class="font-display text-[4rem] leading-none text-cinema-white" aria-live="polite">0</p>
-          <p id="bounceIntervals" class="text-right text-[0.7rem] text-white/60 tracking-[0.08em]"></p>
-        </div>
-        <div class="h-1.5 mb-4 bg-white/10" aria-hidden="true"><div id="bounceLevel" class="h-full bg-cinema-white transition-[width] duration-75" style="width:0%"></div></div>
-        <label for="bounceSens" class="flex justify-between text-[0.65rem] text-cinema-white uppercase tracking-[0.12em] mb-2"><span>Sensibilidad</span><span id="bounceSensValue">8</span></label>
-        <input id="bounceSens" type="range" min="1" max="10" value="8" class="w-full mb-4 accent-white" />
-        <div class="grid grid-cols-2 gap-2">
-          <button id="bounceListenBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Escuchar piques</button>
-          <button id="bounceResetBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Poner en 0</button>
-          <button id="bounceRecordBtn" type="button" disabled class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Grabar 10 s de datos</button>
-          <button id="bounceFileBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Probar con un video</button>
-        </div>
-        <input id="bounceFile" type="file" accept="video/*,audio/*" class="hidden" />
-        <p id="bounceStatus" class="mt-4 text-[0.65rem] text-white/50 uppercase tracking-[0.12em]" role="status"></p>
-        <canvas id="bounceChart" class="hidden w-full h-24 mt-3 bg-white/5" aria-label="Energía de los agudos y piques detectados"></canvas>
-      </section>
-
-      <section class="p-5 mb-8 border border-white/10">
-        <h3 class="font-display text-lg tracking-[0.18em] mb-3 text-cinema-white uppercase">Cámara <span class="text-white/50">(prueba)</span></h3>
-        <p class="text-[0.7rem] text-white/60 leading-relaxed mb-4">Con el celular fijo y toda la mesa a la vista, la cámara mira de qué lado de la red picó la pelota cada vez que el micrófono escucha un pique. Marcá las 4 esquinas de la mesa una vez y activá "Escuchar piques". Todavía no suma puntos.</p>
-        <div id="camWrap" class="relative hidden mb-4 bg-black">
-          <video id="camVideo" playsinline muted class="block w-full"></video>
-          <canvas id="camOverlay" class="absolute inset-0 w-full h-full cursor-crosshair"></canvas>
-        </div>
-        <p id="camCounts" class="mb-3 text-[0.75rem] uppercase tracking-[0.12em] text-cinema-white" aria-live="polite"></p>
-        <div class="grid grid-cols-2 gap-2">
-          <button id="camOpenBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Abrir cámara</button>
-          <button id="camCalibrateBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Marcar esquinas</button>
-          <button id="camFileBtn" type="button" class="col-span-2 px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Analizar un video grabado</button>
-        </div>
-        <input id="camFile" type="file" accept="video/*" class="hidden" />
-        <p id="camStatus" class="mt-4 min-h-[2.4rem] text-[0.65rem] text-white/50 uppercase tracking-[0.12em]" role="status"></p>
-        <div id="camResults" class="grid grid-cols-2 gap-2 mt-3"></div>
-      </section>
+      </footer>
     </div>
 
-    <div id="notification" class="fixed top-4 left-4 right-4 sm:top-6 sm:right-6 sm:left-auto bg-cinema-black border border-white px-6 py-4 text-[0.75rem] uppercase tracking-[0.12em] shadow-cinema z-50 text-cinema-white transform transition-transform duration-300 translate-x-[150%]"></div>
-
-    <div id="celebration" class="fixed inset-0 z-40 items-center justify-center hidden bg-white/10 pointer-events-none">
-      <div id="celebrationText" class="font-display text-5xl md:text-6xl tracking-[0.24em] text-cinema-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.8)]">
-        VICTORIA
+    <!-- Punto propuesto por el modo automático: se suma solo si no lo cancelás. -->
+    <div id="proposal" class="fixed inset-x-3 bottom-[calc(6.5rem+env(safe-area-inset-bottom))] z-30 mx-auto hidden max-w-md border border-white bg-cinema-black shadow-cinema" role="status" aria-live="assertive">
+      <div class="flex items-center gap-3 px-4 py-3">
+        <p class="flex-1 font-display text-2xl tracking-[0.14em]" id="proposalText">Punto para Yeison</p>
+        <button id="proposalCancel" type="button" class="btn">Cancelar</button>
       </div>
+      <div class="h-1 bg-white/10"><div id="proposalBar" class="h-full origin-left bg-cinema-white"></div></div>
+    </div>
+
+    <dialog id="settings" class="m-0 h-dvh max-h-none w-full max-w-none bg-cinema-black p-0 text-cinema-white backdrop:bg-black/70">
+      <div class="mx-auto max-w-lg px-4 pb-16">
+        <div class="sticky top-0 z-10 flex items-center justify-between bg-cinema-black pt-[max(0.5rem,env(safe-area-inset-top))] pb-2">
+          <h2 class="font-display text-3xl tracking-[0.2em]">Ajustes</h2>
+          <button id="settingsClose" type="button" class="icon-btn" aria-label="Cerrar ajustes">
+            <svg class="h-5 w-5 fill-none stroke-current" stroke-width="1.6" stroke-linecap="round"><use href="#i-close" /></svg>
+          </button>
+        </div>
+
+        <details id="groupMatch" class="border-t border-white/10 pt-1 pb-6" open>
+          <summary class="group-title">Partido</summary>
+          <label for="sessionSelect" class="label">Sesión</label>
+          <div class="flex gap-2">
+            <select id="sessionSelect" class="field flex-1"></select>
+            <button id="newSessionBtn" type="button" class="btn">+ Nueva</button>
+          </div>
+          <form id="newSessionForm" class="mt-2 hidden flex gap-2">
+            <input id="newRival" type="text" maxlength="24" placeholder="Nombre del rival" autocomplete="off" class="field flex-1" />
+            <button type="submit" class="btn">Crear</button>
+            <button id="cancelNewSession" type="button" class="icon-btn" aria-label="Cancelar">
+              <svg class="h-4 w-4 fill-none stroke-current" stroke-width="1.6" stroke-linecap="round"><use href="#i-close" /></svg>
+            </button>
+          </form>
+
+          <div class="mt-5 grid grid-cols-2 gap-3">
+            <div>
+              <label for="player1" class="label">Jugador 1</label>
+              <input id="player1" type="text" maxlength="24" autocomplete="off" class="field" />
+            </div>
+            <div>
+              <label for="player2" class="label">Jugador 2</label>
+              <input id="player2" type="text" maxlength="24" autocomplete="off" class="field" />
+            </div>
+          </div>
+
+          <p class="subhead">Correcciones</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="p1Minus" type="button" class="btn btn-quiet">−1 <span data-name="0">Jugador 1</span></button>
+            <button id="p2Minus" type="button" class="btn btn-quiet">−1 <span data-name="1">Jugador 2</span></button>
+            <button id="p1Win" type="button" class="btn btn-quiet">Game <span data-name="0">Jugador 1</span></button>
+            <button id="p2Win" type="button" class="btn btn-quiet">Game <span data-name="1">Jugador 2</span></button>
+            <button id="resetScore" type="button" class="btn btn-quiet">Game en 0-0</button>
+            <button id="deleteSessionBtn" type="button" class="btn btn-quiet">Borrar sesión</button>
+          </div>
+        </details>
+
+        <details id="statsSection" class="border-t border-white/10 pt-1 pb-6">
+          <summary class="group-title">Historial</summary>
+          <dl class="grid grid-cols-4 gap-2 text-center">
+            <div><dd id="totalPoints" class="tabular font-display text-3xl">0</dd><dt class="text-[0.7rem] uppercase tracking-[0.12em] text-white/60">Puntos</dt></div>
+            <div><dd id="totalGames" class="tabular font-display text-3xl">0</dd><dt class="text-[0.7rem] uppercase tracking-[0.12em] text-white/60">Games</dt></div>
+            <div><dd id="longestStreak" class="tabular font-display text-3xl">0</dd><dt class="text-[0.7rem] uppercase tracking-[0.12em] text-white/60">Racha</dt></div>
+            <div><dd id="sessionTime" class="tabular font-display text-3xl">0m</dd><dt class="text-[0.7rem] uppercase tracking-[0.12em] text-white/60">Tiempo</dt></div>
+          </dl>
+          <p class="subhead">Últimos games</p>
+          <ol id="gameLog" class="space-y-1 text-[0.75rem]"></ol>
+          <p id="gameLogEmpty" class="hint">Cuando termine un game aparece acá con su resultado.</p>
+        </details>
+
+        <details class="border-t border-white/10 pt-1 pb-6">
+          <summary class="group-title">Control Bluetooth</summary>
+          <p class="hint mb-4">Un control de presentaciones o cualquier teclado: conectalo por Bluetooth y cada botón suma sin tocar la pantalla.</p>
+          <ul id="controlsInfo" class="space-y-1 text-[0.75rem]"></ul>
+          <p id="learnPrompt" class="mt-4 hidden animate-blink border border-white px-4 py-3 text-[0.75rem] uppercase tracking-[0.12em]" role="status" aria-live="polite"></p>
+          <div class="mt-4 grid grid-cols-2 gap-2">
+            <button id="learnBtn" type="button" class="btn">Configurar botones</button>
+            <button id="resetControlsBtn" type="button" class="btn btn-quiet">Restablecer</button>
+            <button id="skipLearnBtn" type="button" class="btn col-span-2 hidden">Mi control no tiene más botones</button>
+          </div>
+          <p id="wakeStatus" class="hint mt-4"></p>
+        </details>
+
+        <details id="groupAuto" class="border-t border-white/10 pt-1 pb-6">
+          <summary class="group-title">Puntaje automático</summary>
+          <p class="hint">Con el celular fijo mirando la mesa, el micrófono escucha cada pique y la cámara ve de qué lado fue. Si la pelota pica dos veces del mismo lado, o deja de picar, la app propone el punto y te da 2 segundos para cancelarlo con "Cancelar", el botón de deshacer del control o diciendo "no". Si no está segura, no propone nada.</p>
+          <ol id="autoChecklist" class="mt-4 space-y-1 text-[0.75rem]"></ol>
+
+          <label for="leftPlayer" class="label mt-5">A la izquierda de la cámara está</label>
+          <select id="leftPlayer" class="field"></select>
+
+          <p class="subhead">Cámara</p>
+          <div id="camWrap" class="relative mb-3 hidden bg-black">
+            <video id="camVideo" playsinline muted class="block w-full"></video>
+            <canvas id="camOverlay" class="absolute inset-0 h-full w-full cursor-crosshair"></canvas>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="camOpenBtn" type="button" class="btn">Abrir cámara</button>
+            <button id="camCalibrateBtn" type="button" class="btn">Marcar esquinas</button>
+          </div>
+          <p id="camStatus" class="hint mt-3 min-h-[2.4rem]" role="status"></p>
+
+          <p class="subhead">Micrófono</p>
+          <div class="mb-3 flex items-end justify-between gap-4">
+            <p id="bounceCount" class="tabular font-display text-6xl leading-none" aria-live="polite">0</p>
+            <p id="bounceIntervals" class="text-right text-[0.7rem] text-white/60"></p>
+          </div>
+          <div class="mb-4 h-1.5 bg-white/10" aria-hidden="true"><div id="bounceLevel" class="h-full bg-cinema-white transition-[width] duration-75" style="width: 0%"></div></div>
+          <label for="bounceSens" class="label flex justify-between"><span>Sensibilidad</span><span id="bounceSensValue" class="text-cinema-white">8</span></label>
+          <input id="bounceSens" type="range" min="1" max="10" value="8" class="mb-4 w-full accent-white" />
+          <div class="grid grid-cols-2 gap-2">
+            <button id="bounceListenBtn" type="button" class="btn">Probar piques</button>
+            <button id="bounceResetBtn" type="button" class="btn btn-quiet">Poner en 0</button>
+            <button id="bounceRecordBtn" type="button" disabled class="btn btn-quiet">Grabar 10 s de datos</button>
+            <button id="bounceFileBtn" type="button" class="btn btn-quiet">Piques de un video</button>
+          </div>
+          <input id="bounceFile" type="file" accept="video/*,audio/*" class="hidden" />
+          <p id="bounceStatus" class="hint mt-3" role="status"></p>
+          <canvas id="bounceChart" class="mt-3 hidden h-24 w-full bg-white/5" aria-label="Energía de los agudos y piques detectados"></canvas>
+
+          <p class="subhead">Probar con un video</p>
+          <p class="hint mb-3">Grabá un peloteo con el celular fijo y mirá a ojo, pique por pique, si la cámara acierta el lado.</p>
+          <button id="camFileBtn" type="button" class="btn w-full">Analizar un video grabado</button>
+          <input id="camFile" type="file" accept="video/*" class="hidden" />
+          <p id="camCounts" class="mt-3 text-[0.75rem] uppercase tracking-[0.12em]" aria-live="polite"></p>
+          <div id="camResults" class="mt-3 grid grid-cols-2 gap-2"></div>
+        </details>
+
+        <details class="border-t border-b border-white/10 pt-1 pb-6">
+          <summary class="group-title">Respaldo</summary>
+          <p class="hint mb-4">Todo se guarda en este navegador. Con un respaldo pasás tus sesiones a otro celular o PC.</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="exportBtn" type="button" class="btn">Exportar</button>
+            <button id="importBtn" type="button" class="btn">Importar</button>
+          </div>
+          <input id="importFile" type="file" accept="application/json,.json" class="hidden" />
+        </details>
+      </div>
+    </dialog>
+
+    <div id="notification" class="fixed left-3 right-3 top-3 z-50 mx-auto max-w-md -translate-y-[200%] border border-white bg-cinema-black px-5 py-3 text-center text-[0.75rem] uppercase tracking-[0.12em] shadow-cinema transition-transform duration-200" role="status"></div>
+
+    <div id="celebration" class="pointer-events-none fixed inset-0 z-40 hidden items-center justify-center bg-white/10">
+      <div id="celebrationText" class="font-display text-6xl tracking-[0.24em] drop-shadow-[0_10px_10px_rgba(0,0,0,0.8)]">GAME</div>
     </div>
 
     <script type="module" src="./app.js"></script>
   </body>
-</html>
+</html>

@@ -2,6 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    color-scheme: dark;
+    scrollbar-color: rgba(250, 250, 250, 0.25) transparent;
+  }
+  ::selection {
+    background: #fafafa;
+    color: #0a0a0a;
+  }
+  :focus-visible {
+    outline: 2px solid #fafafa;
+    outline-offset: 2px;
+  }
+  /* Los números del marcador no bailan al cambiar de 9 a 10. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 border border-white/25 bg-transparent px-4 text-[0.7rem] uppercase tracking-[0.14em] text-cinema-white transition-colors duration-150 hover:border-white hover:bg-white/10 active:bg-white/15 disabled:pointer-events-none disabled:opacity-30;
+  }
+  .btn-quiet {
+    @apply text-white/70;
+  }
+  .icon-btn {
+    @apply inline-flex h-11 w-11 shrink-0 items-center justify-center border border-transparent text-white/70 transition-colors duration-150 hover:border-white/25 hover:text-cinema-white aria-pressed:border-white aria-pressed:text-cinema-white;
+  }
+  .field {
+    @apply min-h-[44px] w-full min-w-0 border border-white/15 bg-cinema-black px-3 text-sm uppercase tracking-widest text-cinema-white placeholder:text-white/55 focus:border-white focus:outline-none;
+  }
+  .label {
+    @apply mb-2 block text-[0.7rem] uppercase tracking-[0.16em] text-white/60;
+  }
+  .hint {
+    @apply text-[0.8rem] leading-relaxed text-white/60;
+  }
+  .group-title {
+    @apply flex min-h-[56px] cursor-pointer list-none items-center justify-between font-display text-xl tracking-[0.16em] text-cinema-white;
+  }
+  .group-title::-webkit-details-marker {
+    display: none;
+  }
+  .group-title::after {
+    content: "";
+    @apply h-2 w-2 -translate-y-0.5 rotate-45 border-b border-r border-white/60 transition-transform duration-150;
+  }
+  details[open] > .group-title::after {
+    @apply translate-y-0.5 -rotate-[135deg];
+  }
+  .subhead {
+    @apply mb-3 mt-6 text-[0.7rem] uppercase tracking-[0.16em] text-cinema-white;
+  }
+}
+
 .no-tap-highlight {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* La barra del punto propuesto se vacía en el tiempo que hay para cancelarlo. */
+@keyframes drain {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }

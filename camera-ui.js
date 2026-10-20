@@ -127,7 +127,7 @@ export function setupCameraTest(notify) {
     startMarking((calib) => {
       calibration = calib;
       saveCalibration(localStorage, calib);
-      els.status.textContent = "Mesa calibrada. Activá \"Escuchar piques\" y jugá.";
+      els.status.textContent = "Mesa calibrada. Activá el modo automático (arriba) y a jugar.";
     });
   });
 
@@ -266,7 +266,7 @@ export function setupCameraTest(notify) {
 
       const figure = document.createElement("figure");
       const caption = document.createElement("figcaption");
-      caption.className = "mt-1 text-[0.6rem] uppercase tracking-[0.1em] text-white/60";
+      caption.className = "mt-1 text-[0.7rem] uppercase tracking-[0.1em] text-white/60";
       caption.textContent = `${(r.t / 1000).toFixed(1)} s · ${SIDE_NAMES[r.hit.side]}`;
       figure.append(canvas, caption);
       return figure;
