@@ -21,7 +21,8 @@ function highpass(ctx, input) {
 
 /**
  * Escucha el micrófono en vivo.
- * onBounce(tMs) en cada pique, onLevel(0..1) con el volumen de los agudos.
+ * onBounce(tMs, perfMs) en cada pique: el tiempo del audio y el mismo momento en el reloj de
+ * performance.now(), que es el que usan los cuadros de la cámara. onLevel(0..1) con el volumen de los agudos.
  * Devuelve { detector, stop, startRecording, stopRecording }.
  */
 export async function listen({ sensitivity, onBounce, onLevel }) {
@@ -42,6 +43,8 @@ export async function listen({ sensitivity, onBounce, onLevel }) {
   worklet.port.onmessage = ({ data }) => {
     const blockMs = (data.blockSize / ctx.sampleRate) * 1000;
     const end = data.endTime * 1000;
+    // Cuánto atrasa el reloj del audio respecto de performance.now() en este momento.
+    const offset = performance.now() - ctx.currentTime * 1000;
     data.energies.forEach((energy, i) => {
       const t = end - (data.energies.length - 1 - i) * blockMs;
       const hit = feed(detector, energy, t);
@@ -49,7 +52,7 @@ export async function listen({ sensitivity, onBounce, onLevel }) {
         recording.energies.push(+energy.toFixed(6));
         if (hit) recording.bounces.push(Math.round(t - recording.start));
       }
-      if (hit) onBounce(t);
+      if (hit) onBounce(t, t + offset);
     });
     // Nivel para la barrita: relativo al ruido de fondo, con caída suave.
     const loudest = Math.max(...data.energies);

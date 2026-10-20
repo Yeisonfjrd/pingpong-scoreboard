@@ -23,6 +23,8 @@ Install and Offline: You can install it as an app on your phone ("Add to home sc
 
 Bounce Test (beta): The microphone listens for the click of the ball on the table. It cuts the low sounds (under 5 kHz), where most of the voice and noise is, and counts only sudden jumps of energy, so a long sound like someone talking does not count. It is a test for now: bounce the ball, count it yourself and compare. "Grabar 10 s de datos" downloads the raw data, and "Probar con un video" runs the same detector on a recorded video. In a 58 s video of a real game it found 79 bounces and hits.
 
+Camera Test (beta): With the phone fixed and the whole table in the picture, you tap the 4 corners of the table once. The app uses them to find the net, even with perspective (a homography: it turns the table in the picture into a flat rectangle). Every time the microphone hears a bounce, it compares the frame of that moment with the one before and looks for a small white thing that moved and is on top of the table. It also checks that the ball was coming from somewhere, so random spots do not count. "Analizar un video grabado" does the same with a recorded video and shows each bounce with the net drawn on it, so you can check it. In my test video (24 fps, compressed, with chairs in front of the table) it was right in 9 of 10, but it only saw the ball in about 1 of 4 bounces.
+
 Stats: It shows total points, games, longest streak of points in a row and session time.
 
 **Technologies Used**
@@ -54,7 +56,7 @@ The first player to reach 11 points wins the game.
 
 If you change classes in index.html or app.js, build the CSS again with `npm run build` (or `npm run dev:css` while you work).
 
-The game rules and the voice commands live in game.js, the sessions in sessions.js and the bounce detector in bounce.js, without the page. Run the tests with:
+The game rules and the voice commands live in game.js, the sessions in sessions.js, the bounce detector in bounce.js, the table geometry in table.js and the ball search in vision.js, without the page. Run the tests with:
 
 ```
 npm test

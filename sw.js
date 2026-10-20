@@ -2,7 +2,7 @@
 // Archivos propios: primero la red (así siempre llega la última versión) y, si no hay conexión, la copia guardada.
 // Fuentes de Google: primero la copia guardada, porque no cambian.
 
-const CACHE = "pingpong-v2";
+const CACHE = "pingpong-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -15,6 +15,10 @@ const APP_SHELL = [
   "./bounce-ui.js",
   "./bounce-worklet.js",
   "./audio.js",
+  "./table.js",
+  "./vision.js",
+  "./camera.js",
+  "./camera-ui.js",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
