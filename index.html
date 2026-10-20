@@ -202,6 +202,7 @@
             <div id="flash1" class="absolute inset-0 border-2 border-white/90 hidden pointer-events-none"></div>
             <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.2em] mb-4">Jugador 1</p>
             <p id="name1" class="font-display text-xl tracking-[0.16em] text-cinema-white mb-4 min-h-[1.75rem]">Jugador 1</p>
+            <p id="serve1" class="invisible -mt-2 mb-3 text-[0.65rem] uppercase tracking-[0.2em] text-cinema-white"><span aria-hidden="true">●</span> Saca</p>
             <p id="score1" class="font-display text-[4.5rem] sm:text-[5.5rem] leading-none text-cinema-white mb-4 relative">0</p>
             <div class="mt-4 text-[0.7rem] text-cinema-white uppercase tracking-[0.16em]">
               Partidas ganadas <span id="wins1" class="ml-1 font-medium text-cinema-white">0</span>
@@ -214,6 +215,7 @@
             <div id="flash2" class="absolute inset-0 border-2 border-white/90 hidden pointer-events-none"></div>
             <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.2em] mb-4">Jugador 2</p>
             <p id="name2" class="font-display text-xl tracking-[0.16em] text-cinema-white mb-4 min-h-[1.75rem]">Jugador 2</p>
+            <p id="serve2" class="invisible -mt-2 mb-3 text-[0.65rem] uppercase tracking-[0.2em] text-cinema-white"><span aria-hidden="true">●</span> Saca</p>
             <p id="score2" class="font-display text-[4.5rem] sm:text-[5.5rem] leading-none text-cinema-white mb-4 relative">0</p>
             <div class="mt-4 text-[0.7rem] text-cinema-white uppercase tracking-[0.16em]">
               Partidas ganadas <span id="wins2" class="ml-1 font-medium text-cinema-white">0</span>
@@ -234,8 +236,8 @@
             <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Partidas</p>
           </div>
           <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
-            <p id="longestRally" class="mb-1 text-3xl font-display text-cinema-white">0</p>
-            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Rally Max</p>
+            <p id="longestStreak" class="mb-1 text-3xl font-display text-cinema-white">0</p>
+            <p class="text-[0.65rem] text-cinema-white uppercase tracking-[0.12em]">Racha Max</p>
           </div>
           <div class="px-3 py-3 text-sm text-center border border-white/10 bg-white/5">
             <p id="sessionTime" class="mb-1 text-3xl font-display text-cinema-white">0m</p>
@@ -267,7 +269,8 @@
         <button id="p1Win" class="col-span-1 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Gana P1</button>
         <button id="p2Win" class="col-span-1 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-4 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Gana P2</button>
         
-        <button id="resetScore" class="col-span-2 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-5 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Reiniciar Puntaje</button>
+        <button id="undoBtn" class="col-span-2 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-5 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Deshacer</button>
+        <button id="resetScore" class="col-span-2 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-5 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Reiniciar Game</button>
         <button id="toggleStats" class="col-span-2 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] px-5 py-4 bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition">Mostrar Stats</button>
       </section>
     </div>
@@ -280,6 +283,6 @@
       </div>
     </div>
 
-    <script src="./app.js"></script>
+    <script type="module" src="./app.js"></script>
   </body>
-</html>
+</html>
