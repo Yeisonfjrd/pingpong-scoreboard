@@ -7,11 +7,15 @@ This is a simple web application to track Ping Pong scores. I built this project
 
 Score Tracking: Simple interface to add or remove points for two players.
 
+Serve Indicator: It shows who serves. The serve changes every 2 points, and every point from 10-10. Each new game starts with the other player.
+
+Undo: The "Deshacer" button (or saying "deshacer") goes back one step, even after a game ends.
+
 Voice Control: You can use the microphone to add points without touching the screen.
 
 Game History: The app counts how many games each player has won.
 
-Stats: It shows total points and session time.
+Stats: It shows total points, games, longest streak of points in a row and session time.
 
 **Technologies Used**
 HTML5
@@ -34,8 +38,16 @@ Enter the names for Player 1 and Player 2.
 
 Click the microphone button to activate voice control.
 
-Say commands like "Punto para Yeison" or "Punto para Rival". (In the next days, i create a version in english)
+Say commands like "Punto para Yeison", "punto dos", "dos puntos para uno", "borrar uno" or "deshacer". (In the next days, i create a version in english)
 
 The first player to reach 11 points wins the game.
+
+**Tests**
+
+The game rules and the voice commands live in game.js, without the page. Run the tests with:
+
+```
+npm test
+```
 
 *Created by Yeison.*
