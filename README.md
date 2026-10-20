@@ -17,12 +17,16 @@ Sessions: One scoreboard for each rival, for example "Yeison vs Papá" and "Yeis
 
 Backup: Everything is saved in your browser, on this device. With "Exportar respaldo" you download a file with all your sessions, and with "Importar respaldo" you load it on another phone or PC.
 
+Bluetooth Remote: A cheap presentation remote (or any keyboard) adds points without touching the screen. Left / Page Up is a point for player 1, right / Page Down for player 2, and the "b" or "." button undoes. If your remote sends other keys, use "Configurar botones" and press each button.
+
+Install and Offline: You can install it as an app on your phone ("Add to home screen"). After the first visit it works without internet, and the screen stays on while you play.
+
 Stats: It shows total points, games, longest streak of points in a row and session time.
 
 **Technologies Used**
 HTML5
 
-Tailwind CSS
+Tailwind CSS (built to styles.css)
 
 JavaScript (Vanilla)
 
@@ -45,6 +49,8 @@ Say commands like "Punto para Yeison", "punto dos", "dos puntos para uno", "borr
 The first player to reach 11 points wins the game.
 
 **Tests**
+
+If you change classes in index.html or app.js, build the CSS again with `npm run build` (or `npm run dev:css` while you work).
 
 The game rules and the voice commands live in game.js, and the sessions in sessions.js, without the page. Run the tests with:
 
