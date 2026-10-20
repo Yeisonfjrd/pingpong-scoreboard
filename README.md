@@ -5,7 +5,9 @@ This is a simple web application to track Ping Pong scores. I built this project
 
 **Features**
 
-Score Tracking: Simple interface to add or remove points for two players.
+Score Tracking: The main screen is only the scoreboard. Tap the half of a player to add a point. It works with the phone standing or lying down (one player on each side, like a real scoreboard). Everything else (sessions, names, corrections, history, remote, automatic mode, backup) is in Settings.
+
+Automatic Scoring (beta): With the phone fixed looking at the table, the microphone hears each bounce and the camera sees the side. If the ball bounces twice on the same side, or stops bouncing, the app proposes the point and gives you 2 seconds to cancel it (button, the undo button of the remote, or saying "no"). If it is not sure, it proposes nothing.
 
 Serve Indicator: It shows who serves. The serve changes every 2 points, and every point from 10-10. Each new game starts with the other player.
 
@@ -56,7 +58,7 @@ The first player to reach 11 points wins the game.
 
 If you change classes in index.html or app.js, build the CSS again with `npm run build` (or `npm run dev:css` while you work).
 
-The game rules and the voice commands live in game.js, the sessions in sessions.js, the bounce detector in bounce.js, the table geometry in table.js and the ball search in vision.js, without the page. Run the tests with:
+The game rules and the voice commands live in game.js, the sessions in sessions.js, the bounce detector in bounce.js, the table geometry in table.js, the ball search in vision.js and the rally referee in rally.js, without the page. Run the tests with:
 
 ```
 npm test

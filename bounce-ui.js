@@ -49,7 +49,7 @@ export function setupBounceTest(notify) {
     if (session) {
       session.stop();
       session = null;
-      els.listenBtn.textContent = "Escuchar piques";
+      els.listenBtn.textContent = "Probar piques";
       els.recordBtn.disabled = true;
       els.level.style.width = "0%";
       els.status.textContent = "";
