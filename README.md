@@ -21,6 +21,8 @@ Bluetooth Remote: A cheap presentation remote (or any keyboard) adds points with
 
 Install and Offline: You can install it as an app on your phone ("Add to home screen"). After the first visit it works without internet, and the screen stays on while you play.
 
+Bounce Test (beta): The microphone listens for the click of the ball on the table. It cuts the low sounds (under 5 kHz), where most of the voice and noise is, and counts only sudden jumps of energy, so a long sound like someone talking does not count. It is a test for now: bounce the ball, count it yourself and compare. "Grabar 10 s de datos" downloads the raw data, and "Probar con un video" runs the same detector on a recorded video. In a 58 s video of a real game it found 79 bounces and hits.
+
 Stats: It shows total points, games, longest streak of points in a row and session time.
 
 **Technologies Used**
@@ -52,7 +54,7 @@ The first player to reach 11 points wins the game.
 
 If you change classes in index.html or app.js, build the CSS again with `npm run build` (or `npm run dev:css` while you work).
 
-The game rules and the voice commands live in game.js, and the sessions in sessions.js, without the page. Run the tests with:
+The game rules and the voice commands live in game.js, the sessions in sessions.js and the bounce detector in bounce.js, without the page. Run the tests with:
 
 ```
 npm test

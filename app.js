@@ -33,6 +33,7 @@ import {
   skip,
   keyLabel,
 } from "./controls.js";
+import { setupBounceTest } from "./bounce-ui.js";
 
 let store = loadStore(localStorage);
 let match = activeSession(store).match;
@@ -142,6 +143,7 @@ function init() {
   updateUI();
   setupEventListeners();
   setupControls();
+  setupBounceTest(showNotification);
   keepScreenOn();
   startTimer();
   registerServiceWorker();
