@@ -268,6 +268,24 @@
         <p id="bounceStatus" class="mt-4 text-[0.65rem] text-white/50 uppercase tracking-[0.12em]" role="status"></p>
         <canvas id="bounceChart" class="hidden w-full h-24 mt-3 bg-white/5" aria-label="Energía de los agudos y piques detectados"></canvas>
       </section>
+
+      <section class="p-5 mb-8 border border-white/10">
+        <h3 class="font-display text-lg tracking-[0.18em] mb-3 text-cinema-white uppercase">Cámara <span class="text-white/50">(prueba)</span></h3>
+        <p class="text-[0.7rem] text-white/60 leading-relaxed mb-4">Con el celular fijo y toda la mesa a la vista, la cámara mira de qué lado de la red picó la pelota cada vez que el micrófono escucha un pique. Marcá las 4 esquinas de la mesa una vez y activá "Escuchar piques". Todavía no suma puntos.</p>
+        <div id="camWrap" class="relative hidden mb-4 bg-black">
+          <video id="camVideo" playsinline muted class="block w-full"></video>
+          <canvas id="camOverlay" class="absolute inset-0 w-full h-full cursor-crosshair"></canvas>
+        </div>
+        <p id="camCounts" class="mb-3 text-[0.75rem] uppercase tracking-[0.12em] text-cinema-white" aria-live="polite"></p>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="camOpenBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Abrir cámara</button>
+          <button id="camCalibrateBtn" type="button" class="px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Marcar esquinas</button>
+          <button id="camFileBtn" type="button" class="col-span-2 px-3 py-3 border border-white/30 text-[0.7rem] uppercase tracking-[0.14em] bg-transparent text-cinema-white hover:bg-white/10 hover:border-white transition disabled:opacity-30 disabled:pointer-events-none">Analizar un video grabado</button>
+        </div>
+        <input id="camFile" type="file" accept="video/*" class="hidden" />
+        <p id="camStatus" class="mt-4 min-h-[2.4rem] text-[0.65rem] text-white/50 uppercase tracking-[0.12em]" role="status"></p>
+        <div id="camResults" class="grid grid-cols-2 gap-2 mt-3"></div>
+      </section>
     </div>
 
     <div id="notification" class="fixed top-4 left-4 right-4 sm:top-6 sm:right-6 sm:left-auto bg-cinema-black border border-white px-6 py-4 text-[0.75rem] uppercase tracking-[0.12em] shadow-cinema z-50 text-cinema-white transform transition-transform duration-300 translate-x-[150%]"></div>

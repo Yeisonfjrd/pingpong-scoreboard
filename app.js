@@ -34,6 +34,7 @@ import {
   keyLabel,
 } from "./controls.js";
 import { setupBounceTest } from "./bounce-ui.js";
+import { setupCameraTest } from "./camera-ui.js";
 
 let store = loadStore(localStorage);
 let match = activeSession(store).match;
@@ -144,6 +145,7 @@ function init() {
   setupEventListeners();
   setupControls();
   setupBounceTest(showNotification);
+  setupCameraTest(showNotification);
   keepScreenOn();
   startTimer();
   registerServiceWorker();

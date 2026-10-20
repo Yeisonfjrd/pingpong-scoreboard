@@ -59,9 +59,11 @@ export function setupBounceTest(notify) {
       els.status.textContent = "Midiendo el ruido de fondo...";
       session = await listen({
         sensitivity: toDetector(Number(els.sens.value)),
-        onBounce: (t) => {
+        onBounce: (t, perfTime) => {
           times.push(t);
           showCount();
+          // Aviso para la cámara, que busca de qué lado picó.
+          window.dispatchEvent(new CustomEvent("pingpong:bounce", { detail: { perfTime } }));
         },
         onLevel: (level) => {
           els.level.style.width = `${Math.round(level * 100)}%`;
